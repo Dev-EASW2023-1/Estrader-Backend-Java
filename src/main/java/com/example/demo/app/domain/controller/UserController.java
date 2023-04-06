@@ -36,9 +36,7 @@ public class UserController {
             Model model
     ) {
         List<UserEntity> userList = userRepository.findAll();
-        userList.forEach(userEntity ->
-                        model.addAttribute("user", userEntity)
-        );
+        model.addAttribute("userList", userList);
 
         return "user/list";
     }
