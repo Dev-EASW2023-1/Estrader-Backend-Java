@@ -1,17 +1,17 @@
 package com.example.demo.app.domain.service;
 
-import com.example.demo.app.domain.User;
+import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public void addUser() {
-        User user = User.builder().
+        UserEntity user = UserEntity.builder().
                 username("<img src=\"https://example.com/images/item.jpg\" alt=\"아이템\">").
                 password("비번").
                 day("123").
