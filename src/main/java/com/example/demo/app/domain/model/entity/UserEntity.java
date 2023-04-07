@@ -23,9 +23,9 @@ public class UserEntity {
     private String period;
 
     @Builder
-    public UserEntity(String username, String password, String day) {
-        this.picture = username;
-        this.information = password;
-        this.period = day;
+    public UserEntity(String picture, String information, String period) {
+        this.picture = picture;
+        this.information = information;
+        this.period = period;
     }
 }
