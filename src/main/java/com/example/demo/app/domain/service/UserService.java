@@ -38,7 +38,7 @@ public class UserService {
         }
 
         List<UserDto> listUserDto = listUser.stream()
-                .map(m -> new UserDto(m.getPicture(), m.getInformation(), m.getPeriod()))
+                .map(m -> new UserDto(m.getPicture(), m.getInformation(), m.getPeriod(), m.getLocation(), m.getReserveprice(),m.getAuctionperiod()))
                 .collect(Collectors.toList());
 
         UserListDto.builder()

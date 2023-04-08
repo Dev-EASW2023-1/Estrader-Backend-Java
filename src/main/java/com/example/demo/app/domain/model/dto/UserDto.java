@@ -19,11 +19,23 @@ public class UserDto {
     @NotBlank
     private String period;
 
+    @NotBlank
+    private String location;
+
+    @NotBlank
+    private String reserveprice;
+
+    @NotBlank
+    private String auctionperiod;
+
     @Builder
-    public UserDto(String picture, String information, String period){
+    public UserDto(String picture, String information, String period,String location, String reserveprice, String auctionperiod){
         this.picture = picture;
         this.information = information;
         this.period = period;
+        this.location = location;
+        this.reserveprice = reserveprice;
+        this.auctionperiod = auctionperiod;
     }
 
     public UserEntity toEntity() {
@@ -31,6 +43,9 @@ public class UserDto {
                 .picture(picture)
                 .information(information)
                 .period(period)
+                .location(location)
+                .reserveprice(reserveprice)
+                .auctionperiod(auctionperiod)
                 .build();
     }
 }

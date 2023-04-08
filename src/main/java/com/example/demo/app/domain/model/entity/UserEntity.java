@@ -22,10 +22,21 @@ public class UserEntity {
 
     private String period;
 
+    private String location;
+
+    private String reserveprice;
+
+    private String auctionperiod;
+
+
     @Builder
-    public UserEntity(String picture, String information, String period) {
+    public UserEntity(String picture, String information, String period,String location, String reserveprice, String auctionperiod) {
         this.picture = picture;
         this.information = information;
         this.period = period;
+        this.location = location;
+        this.reserveprice = reserveprice;
+        this.auctionperiod = auctionperiod;
+
     }
 }
