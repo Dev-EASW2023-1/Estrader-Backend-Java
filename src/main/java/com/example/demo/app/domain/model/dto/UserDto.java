@@ -1,7 +1,7 @@
 package com.example.demo.app.domain.model.dto;
 
 
-import com.example.demo.app.domain.model.entity.User;
+import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.model.util.HashUtil;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,28 +35,8 @@ public class UserDto {
 
     }
 
-    public String getUserid() {
-
-        return HashUtil.sha256(userid);
-    }
-
-    public String getPassword() {
-        return HashUtil.sha256(password);
-    }
-
-    public String getResidentid() {
-        return HashUtil.sha256(residentid);
-    }
-
-    public String getPhonenum() {
-        return HashUtil.sha256(phonenum);
-    }
-
-    public String getAddress() {
-        return HashUtil.sha256(address);
-    }
-    public User toEntity() {
-        return User.builder()
+    public UserEntity toEntity() {
+        return UserEntity.builder()
                 .userid(userid)
                 .password(password)
                 .residentid(residentid)

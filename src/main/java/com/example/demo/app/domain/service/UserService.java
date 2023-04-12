@@ -2,7 +2,7 @@ package com.example.demo.app.domain.service;
 
 import com.example.demo.app.domain.model.dto.UserDto;
 import com.example.demo.app.domain.model.dto.UserListDto;
-import com.example.demo.app.domain.model.entity.User;
+import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class UserService {
             String residentid
 
     ) {
-        User userinfo = User.builder()
+        UserEntity userinfo = UserEntity.builder()
                 .userid(userid)
                 .password(password)
                 .address(address)
@@ -32,15 +32,16 @@ public class UserService {
         userRepository.save(userinfo);
 
     }
+
     public void printAllUserIds() {
-        List<User> userList = userRepository.findAll();
-        for (User user : userList) {
+        List<UserEntity> userList = userRepository.findAll();
+        for (UserEntity user : userList) {
             System.out.println("User ID: " + user.getUserid());
         }
     }
 
     public UserListDto findUserinfo() {
-        List<User> listUserinfo = userRepository.findAll();
+        List<UserEntity> listUserinfo = userRepository.findAll();
 
         if(listUserinfo == null){
             throw new IllegalArgumentException();
@@ -51,11 +52,9 @@ public class UserService {
                 .collect(Collectors.toList());
 
         UserListDto.builder()
-                .userDto(listUserDto)
+                .UserDto(listUserDto)
                 .build();
 
-        return UserListDto.builder().userDto(listUserDto).build();
+        return UserListDto.builder().UserDto(listUserDto).build();
     }
-
-
 }

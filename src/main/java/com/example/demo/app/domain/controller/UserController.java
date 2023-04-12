@@ -1,7 +1,7 @@
 package com.example.demo.app.domain.controller;
 
 import com.example.demo.app.domain.model.dto.UserListDto;
-import com.example.demo.app.domain.model.entity.User;
+import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.UserRepository;
 import com.example.demo.app.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class UserController {
     public String showUserinfoList(
             Model model
     ) {
-        List<User> userinfoList = userRepository.findAll();
+        List<UserEntity> userinfoList = userRepository.findAll();
         model.addAttribute("userinfoList", userinfoList);
 
         return "userinfo/list";

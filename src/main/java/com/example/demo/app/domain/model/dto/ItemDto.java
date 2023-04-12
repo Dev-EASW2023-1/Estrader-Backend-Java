@@ -1,6 +1,6 @@
 package com.example.demo.app.domain.model.dto;
 
-import com.example.demo.app.domain.model.entity.Item;
+import com.example.demo.app.domain.model.entity.ItemEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,8 +37,8 @@ public class ItemDto {
         this.auctionperiod = auctionperiod;
     }
 
-    public Item toEntity() {
-        return Item.builder()
+    public ItemEntity toEntity() {
+        return ItemEntity.builder()
                 .picture(picture)
                 .information(information)
                 .period(period)

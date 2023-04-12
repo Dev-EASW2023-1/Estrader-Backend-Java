@@ -10,39 +10,30 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class User {
+@Table(name = "user")
+public class UserEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, unique = true)
     private String userid;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String residentid;
 
+    @Column(nullable = false)
     private String phonenum;
 
+    @Column(nullable = false)
     private String address;
-    public void setPassword(String password) {
-        this.password = HashUtil.sha256(password);
-    }
-
-    public void setUserid(String userid) {
-        this.userid = HashUtil.sha256(userid);
-    }
-
-    public void setResidentid(String residentid) {
-        this.residentid = HashUtil.sha256(residentid);
-    }
-
-    public void setPhonenum(String phonenum) {
-        this.phonenum = HashUtil.sha256(phonenum);
-    }
-
 
     @Builder
-    public User(String userid, String password, String residentid, String phonenum, String address){
+    public UserEntity(String userid, String password, String residentid, String phonenum, String address){
         this.userid = HashUtil.sha256(userid);
         this.password = HashUtil.sha256(password);
         this.residentid = HashUtil.sha256(residentid);
@@ -66,4 +57,11 @@ public class User {
         return this.phonenum.equals(HashUtil.sha256(phonenum));
     }
 
+    public void setPassword(String password) { this.password = HashUtil.sha256(password); }
+
+    public void setUserid(String userid) {this.userid = HashUtil.sha256(userid); }
+
+    public void setResidentid(String residentid) { this.residentid = HashUtil.sha256(residentid); }
+
+    public void setPhonenum(String phonenum) { this.phonenum = HashUtil.sha256(phonenum); }
 }

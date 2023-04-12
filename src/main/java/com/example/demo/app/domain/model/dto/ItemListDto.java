@@ -10,7 +10,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class ItemListDto {
-
     @NotBlank
     private List<ItemDto> itemDto;
 

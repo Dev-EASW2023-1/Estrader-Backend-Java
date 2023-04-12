@@ -1,7 +1,7 @@
 package com.example.demo.app.domain.controller;
 
 import com.example.demo.app.domain.model.dto.ItemListDto;
-import com.example.demo.app.domain.model.entity.Item;
+import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.service.ItemService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class ItemController {
     public String showUserList(
             Model model
     ) {
-        List<Item> userList = itemRepository.findAll();
+        List<ItemEntity> userList = itemRepository.findAll();
         model.addAttribute("userList", userList);
 
         return "user/list";

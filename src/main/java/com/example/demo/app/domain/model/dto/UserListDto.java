@@ -11,7 +11,7 @@ public class UserListDto {
     private List<UserDto> UserDto;
 
     @Builder
-    public UserListDto(List<UserDto> userDto) {
+    public UserListDto(List<UserDto> UserDto) {
         this.UserDto = UserDto;
     }
 }

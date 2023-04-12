@@ -2,7 +2,7 @@ package com.example.demo.app.domain.service;
 
 import com.example.demo.app.domain.model.dto.ItemDto;
 import com.example.demo.app.domain.model.dto.ItemListDto;
-import com.example.demo.app.domain.model.entity.Item;
+import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class ItemService {
             String day
 
     ) {
-        Item user = Item.builder()
+        ItemEntity user = ItemEntity.builder()
                 .picture(username)
                 .information(password)
                 .period(day)
@@ -29,9 +29,8 @@ public class ItemService {
 
     }
 
-    
     public ItemListDto findUser() {
-        List<Item> listUser = itemRepository.findAll();
+        List<ItemEntity> listUser = itemRepository.findAll();
 
         if(listUser == null){
             throw new IllegalArgumentException();
