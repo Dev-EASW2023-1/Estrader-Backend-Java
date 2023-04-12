@@ -1,8 +1,7 @@
 package com.example.demo.app.domain.controller;
 
-import com.example.demo.app.domain.model.dto.UserDto;
 import com.example.demo.app.domain.model.dto.UserListDto;
-import com.example.demo.app.domain.model.entity.UserEntity;
+import com.example.demo.app.domain.model.entity.User;
 import com.example.demo.app.domain.repository.UserRepository;
 import com.example.demo.app.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,45 +10,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
-@RestController
-@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserRepository userRepository;
-    private final UserService userService;
+    private final UserService UserService;
 
     @PostMapping("/add")
-    public String addUserEntity(
-            @RequestParam String username,
+    public String addUserinfoEntity(
+            @RequestParam String userid,
             @RequestParam String password,
-            @RequestParam String day
+            @RequestParam String residentid,
+            @RequestParam String phonenum,
+            @RequestParam String address
     ) {
-        userService.addUser(username,password,day);
-        return "redirect:/user/list";
+        UserService.addUserinfo(userid,password, residentid, phonenum, address);
+        return "redirect:/userinfo/list";
     }
 
     @GetMapping("/list")
-    public String showUserList(
+    public String showUserinfoList(
             Model model
     ) {
-        List<UserEntity> userList = userRepository.findAll();
-        model.addAttribute("userList", userList);
+        List<User> userinfoList = userRepository.findAll();
+        model.addAttribute("userinfoList", userinfoList);
 
-        return "user/list";
+        return "userinfo/list";
     }
 
     @GetMapping("/test")
     public ResponseEntity<UserListDto> Test() {
 
-        HttpHeaders headers = new HttpHeaders();
+        org.springframework.http.HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-        return new ResponseEntity<>(userService.findUser(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(UserService.findUserinfo(), headers, HttpStatus.OK);
     }
 }
-

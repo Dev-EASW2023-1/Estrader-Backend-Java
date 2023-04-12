@@ -1,53 +1,67 @@
 package com.example.demo.app.domain.model.dto;
 
-import com.example.demo.app.domain.model.entity.UserEntity;
+
+import com.example.demo.app.domain.model.entity.User;
+import com.example.demo.app.domain.model.util.HashUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import javax.validation.constraints.NotBlank;
-import java.util.List;
 
+import javax.validation.constraints.NotBlank;
 @Getter
 @NoArgsConstructor
 public class UserDto {
     @NotBlank
-    private String picture;
+    private String userid;
 
     @NotBlank
-    private String information;
+    private String password;
 
     @NotBlank
-    private String period;
+    private String residentid;
 
     @NotBlank
-    private String location;
+    private String phonenum;
 
     @NotBlank
-    private String reserveprice;
-
-    @NotBlank
-    private String auctionperiod;
-
+    private String address;
     @Builder
-    public UserDto(String picture, String information, String period,String location, String reserveprice, String auctionperiod){
-        this.picture = picture;
-        this.information = information;
-        this.period = period;
-        this.location = location;
-        this.reserveprice = reserveprice;
-        this.auctionperiod = auctionperiod;
+    public UserDto(String userid, String password, String residentid, String phonenum, String address) {
+        this.userid = HashUtil.sha256(userid);
+        this.password = HashUtil.sha256(password);
+        this.residentid = HashUtil.sha256(residentid);
+        this.phonenum = HashUtil.sha256(phonenum);
+        this.address = HashUtil.sha256(address);
+
     }
 
-    public UserEntity toEntity() {
-        return UserEntity.builder()
-                .picture(picture)
-                .information(information)
-                .period(period)
-                .location(location)
-                .reserveprice(reserveprice)
-                .auctionperiod(auctionperiod)
+    public String getUserid() {
+
+        return HashUtil.sha256(userid);
+    }
+
+    public String getPassword() {
+        return HashUtil.sha256(password);
+    }
+
+    public String getResidentid() {
+        return HashUtil.sha256(residentid);
+    }
+
+    public String getPhonenum() {
+        return HashUtil.sha256(phonenum);
+    }
+
+    public String getAddress() {
+        return HashUtil.sha256(address);
+    }
+    public User toEntity() {
+        return User.builder()
+                .userid(userid)
+                .password(password)
+                .residentid(residentid)
+                .phonenum(phonenum)
+                .address(address)
                 .build();
     }
 }
-
-

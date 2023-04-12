@@ -9,8 +9,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity {
+public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,7 +29,7 @@ public class UserEntity {
 
 
     @Builder
-    public UserEntity(String picture, String information, String period,String location, String reserveprice, String auctionperiod) {
+    public Item(String picture, String information, String period, String location, String reserveprice, String auctionperiod) {
         this.picture = picture;
         this.information = information;
         this.period = period;
