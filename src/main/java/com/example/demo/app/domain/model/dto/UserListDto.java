@@ -8,10 +8,10 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class UserListDto {
-    private List<UserDto> UserDto;
+    private List<UserDto> userDto;
 
     @Builder
-    public UserListDto(List<UserDto> UserDto) {
-        this.UserDto = UserDto;
+    public UserListDto(List<UserDto> userDto) {
+        this.userDto = userDto;
     }
 }

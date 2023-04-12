@@ -52,9 +52,9 @@ public class UserService {
                 .collect(Collectors.toList());
 
         UserListDto.builder()
-                .UserDto(listUserDto)
+                .userDto(listUserDto)
                 .build();
 
-        return UserListDto.builder().UserDto(listUserDto).build();
+        return UserListDto.builder().userDto(listUserDto).build();
     }
 }
