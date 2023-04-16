@@ -45,7 +45,7 @@ public class UserService {
     public UserListDto findUserinfo() {
         List<UserEntity> listUserinfo = userRepository.findAll();
 
-        if(listUserinfo == null){
+        if (listUserinfo == null) {
             throw new IllegalArgumentException();
         }
 
@@ -67,7 +67,7 @@ public class UserService {
 
         System.out.println("널 값이 맞습니까?" + isUserExists.isPresent());
 
-        if(isUserExists.isPresent()){
+        if (isUserExists.isPresent()) {
             return RegisterDataResponse.builder()
                     .isSuccess(false)
                     .message("회원가입에 실패하였습니다.")
@@ -82,13 +82,13 @@ public class UserService {
                 .build();
     }
 
-    public SignupCheckResponse CheckDuplicateUserinfo(SignupCheckRequest signupCheckRequest) {
+    public SignupCheckResponse checkDuplicateUserinfo(SignupCheckRequest signupCheckRequest) {
         Optional<UserEntity> isUserExists =
                 userRepository.findByUserid(signupCheckRequest.getUserid());
 
         System.out.println("널 값이 맞습니까?" + isUserExists.isPresent());
 
-        if(isUserExists.isPresent()){
+        if (isUserExists.isPresent()) {
             return SignupCheckResponse.builder()
                     .isDuplicated(false)
                     .message("아이디가 이미 존재합니다.")
@@ -98,6 +98,33 @@ public class UserService {
         return SignupCheckResponse.builder()
                 .isDuplicated(true)
                 .message("사용할 수 있는 아이디입니다.")
+                .build();
+    }
+
+    public SignInResponse loginUser(SignInRequest signInRequest) {
+        Optional<UserEntity> isUserExists =
+                userRepository.findByUserid(signInRequest.getUserid());
+
+        System.out.println("널 값이 맞습니까?" + isUserExists.isPresent());
+
+        if (isUserExists.isEmpty()) {
+            return SignInResponse.builder()
+                    .isSuccess(false)
+                    .message("로그인에 실패했습니다.")
+                    .build();
+        }
+
+        if (!isUserExists.get().getPassword()
+                .equals(signInRequest.getPassword())) {
+            return SignInResponse.builder()
+                    .isSuccess(false)
+                    .message("비밀번호가 다릅니다.")
+                    .build();
+        }
+
+        return SignInResponse.builder()
+                .isSuccess(true)
+                .message("로그인에 성공했습니다.")
                 .build();
     }
 }

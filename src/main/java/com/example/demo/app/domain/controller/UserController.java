@@ -75,6 +75,17 @@ public class UserController {
 
         System.out.println("내 아이디는?" + signupCheckRequest.getUserid());
 
-        return new ResponseEntity<>(UserService.CheckDuplicateUserinfo(signupCheckRequest), headers, HttpStatus.OK);
+        return new ResponseEntity<>(UserService.checkDuplicateUserinfo(signupCheckRequest), headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<SignInResponse> checkMember(@RequestBody SignInRequest signInRequest) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+        System.out.println("내 아이디는?" + signInRequest.getUserid());
+
+        return new ResponseEntity<>(UserService.loginUser(signInRequest), headers, HttpStatus.OK);
     }
 }
