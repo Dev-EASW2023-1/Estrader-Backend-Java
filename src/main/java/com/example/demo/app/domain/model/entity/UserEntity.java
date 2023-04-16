@@ -34,11 +34,11 @@ public class UserEntity {
 
     @Builder
     public UserEntity(String userid, String password, String residentid, String phonenum, String address){
-        this.userid = HashUtil.sha256(userid);
-        this.password = HashUtil.sha256(password);
-        this.residentid = HashUtil.sha256(residentid);
-        this.phonenum = HashUtil.sha256(phonenum);
-        this.address = HashUtil.sha256(address);
+        this.userid = userid;
+        this.password = password;
+        this.residentid = residentid;
+        this.phonenum = phonenum;
+        this.address = address;
     }
 
     public boolean checkPassword(String password) {

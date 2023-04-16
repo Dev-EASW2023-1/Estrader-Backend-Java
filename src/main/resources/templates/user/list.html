@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-    <tr th:each="user: ${userList}">
-        <td th:text="${user.getPicture()}"></td>
-        <td th:text="${user.getInformation()}"></td>
-        <td th:text="${user.getPeriod()}"></td>
-    </tr>
+    <table>
+        <tr>
+            <th>Userid</th>
+            <th>Password</th>
+            <th>Residentid</th>
+            <th>Phonenum</th>
+            <th>Address</th>
+        </tr>
+
+        <tr th:each="user: ${userinfoList}">
+            <td th:text="${user.getUserid()}"></td>
+            <td th:text="${user.getPassword()}"></td>
+            <td th:text="${user.getResidentid()}"></td>
+            <td th:text="${user.getPhonenum()}"></td>
+            <td th:text="${user.getAddress()}"></td>
+        </tr>
+    </table>
 </body>
 </html>

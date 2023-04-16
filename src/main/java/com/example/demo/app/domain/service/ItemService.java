@@ -14,19 +14,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
-    public void addUser(
-            String username,
-            String password,
-            String day
+    public void addItem(
+            String picture,
+            String information,
+            String period,
+            String location,
+            String reserveprice,
+            String auctionperiod
 
     ) {
-        ItemEntity user = ItemEntity.builder()
-                .picture(username)
-                .information(password)
-                .period(day)
+        ItemEntity item = ItemEntity.builder()
+                .picture(picture)
+                .information(information)
+                .period(period)
+                .location(location)
+                .reserveprice(reserveprice)
+                .auctionperiod(auctionperiod)
                 .build();
-        itemRepository.save(user);
-
+        itemRepository.save(item);
     }
 
     public ItemListDto findUser() {
@@ -40,12 +45,8 @@ public class ItemService {
                 .map(m -> new ItemDto(m.getPicture(), m.getInformation(), m.getPeriod(), m.getLocation(), m.getReserveprice(),m.getAuctionperiod()))
                 .collect(Collectors.toList());
 
-        ItemListDto.builder()
+        return ItemListDto.builder()
                 .itemDto(listItemDto)
                 .build();
-
-        return ItemListDto.builder().itemDto(listItemDto).build();
     }
-
-
 }

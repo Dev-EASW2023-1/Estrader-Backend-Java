@@ -9,40 +9,59 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@RestController
-@RequestMapping("/user")
+@Controller
+@RequestMapping("/item")
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemRepository itemRepository;
     private final ItemService itemService;
 
+    // 아이템 파라미터 입력 페이지 출력
+    @GetMapping("")
+    public String inputPage(){
+        return "item/index";
+    }
+
+    // 아이템 저장
     @PostMapping("/add")
     public String addUserEntity(
-            @RequestParam String username,
-            @RequestParam String password,
-            @RequestParam String day
+            @RequestParam String picture,
+            @RequestParam String information,
+            @RequestParam String period,
+            @RequestParam String location,
+            @RequestParam String reserveprice,
+            @RequestParam String auctionperiod
     ) {
-        itemService.addUser(username,password,day);
-        return "redirect:/user/list";
+        itemService.addItem(
+                picture,
+                information,
+                period,
+                location,
+                reserveprice,
+                auctionperiod
+        );
+        return "redirect:/item/list";
     }
 
+    // 아이템 리스트 출력
     @GetMapping("/list")
-    public String showUserList(
+    public String showItemList(
             Model model
     ) {
-        List<ItemEntity> userList = itemRepository.findAll();
-        model.addAttribute("userList", userList);
+        List<ItemEntity> itemList = itemRepository.findAll();
+        model.addAttribute("itemList", itemList);
 
-        return "user/list";
+        return "item/list";
     }
 
-    @GetMapping("/test")
+    @GetMapping("/show-list")
     public ResponseEntity<ItemListDto> Test() {
 
         HttpHeaders headers = new HttpHeaders();

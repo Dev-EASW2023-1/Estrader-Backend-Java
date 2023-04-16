@@ -4,13 +4,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class ItemListDto {
-    @NotBlank
     private List<ItemDto> itemDto;
 
     @Builder

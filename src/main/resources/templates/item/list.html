@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Picture</th>
+            <th>Information</th>
+            <th>Period</th>
+            <th>Location</th>
+            <th>Reserveprice</th>
+            <th>Auctionperiod</th>
+        </tr>
+
+        <tr th:each="item: ${itemList}">
+            <td th:text="${item.getPicture()}"></td>
+            <td th:text="${item.getInformation()}"></td>
+            <td th:text="${item.getPeriod()}"></td>
+            <td th:text="${item.getLocation()}"></td>
+            <td th:text="${item.getReserveprice()}"></td>
+            <td th:text="${item.getAuctionperiod()}"></td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -10,7 +10,6 @@ public class UserTest {
         String password = "mypassword";
         UserEntity userinfo = new UserEntity();
         userinfo.setPassword(password);
-
         String hashedPassword = HashUtil.sha256(password);
 
         System.out.println("Original Password: " + password);

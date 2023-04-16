@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @NoArgsConstructor
-public class UserDto {
+public class RegisterDataRequest {
     @NotBlank
     private String userid;
 
@@ -26,7 +26,7 @@ public class UserDto {
     private String address;
 
     @Builder
-    public UserDto(String userid, String password, String residentid, String phonenum, String address) {
+    public RegisterDataRequest(String userid, String password, String residentid, String phonenum, String address) {
         this.userid = userid;
         this.password = password;
         this.residentid = residentid;
