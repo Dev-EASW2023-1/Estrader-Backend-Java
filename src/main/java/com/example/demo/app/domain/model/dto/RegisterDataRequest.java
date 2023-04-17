@@ -25,13 +25,17 @@ public class RegisterDataRequest {
     @NotBlank
     private String address;
 
+    @NotBlank
+    private String fcmToken;
+
     @Builder
-    public RegisterDataRequest(String userid, String password, String residentid, String phonenum, String address) {
+    public RegisterDataRequest(String userid, String password, String residentid, String phonenum, String address, String fcmToken) {
         this.userid = userid;
         this.password = password;
         this.residentid = residentid;
         this.phonenum = phonenum;
         this.address = address;
+        this.fcmToken = fcmToken;
     }
 
     public UserEntity toEntity() {
@@ -41,6 +45,7 @@ public class RegisterDataRequest {
                 .residentid(residentid)
                 .phonenum(phonenum)
                 .address(address)
+                .fcmToken(fcmToken)
                 .build();
     }
 }

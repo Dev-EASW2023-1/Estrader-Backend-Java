@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,7 +22,8 @@ public class UserService {
             String password,
             String residentid,
             String phonenum,
-            String address
+            String address,
+            String fcmToken
     ) {
         UserEntity userinfo = UserEntity.builder()
                 .userid(userid)
@@ -31,15 +31,9 @@ public class UserService {
                 .residentid(residentid)
                 .phonenum(phonenum)
                 .address(address)
+                .fcmToken(fcmToken)
                 .build();
         userRepository.save(userinfo);
-    }
-
-    public void printAllUserIds() {
-        List<UserEntity> userList = userRepository.findAll();
-        for (UserEntity user : userList) {
-            System.out.println("User ID: " + user.getUserid());
-        }
     }
 
     public UserListDto findUserinfo() {
@@ -50,7 +44,14 @@ public class UserService {
         }
 
         List<UserDto> listUserDto = listUserinfo.stream()
-                .map(m -> new UserDto(m.getUserid(), m.getPassword(), m.getAddress(), m.getPhonenum(), m.getResidentid()))
+                .map(m -> new UserDto(
+                        m.getUserid(),
+                        m.getPassword(),
+                        m.getAddress(),
+                        m.getPhonenum(),
+                        m.getResidentid(),
+                        m.getFcmToken()
+                ))
                 .collect(Collectors.toList());
 
         return UserListDto.builder()
@@ -64,8 +65,6 @@ public class UserService {
 
         Optional<UserEntity> isUserExists =
                 userRepository.findByUserid(registerDataRequest.getUserid());
-
-        System.out.println("널 값이 맞습니까?" + isUserExists.isPresent());
 
         if (isUserExists.isPresent()) {
             return RegisterDataResponse.builder()
@@ -86,8 +85,6 @@ public class UserService {
         Optional<UserEntity> isUserExists =
                 userRepository.findByUserid(signupCheckRequest.getUserid());
 
-        System.out.println("널 값이 맞습니까?" + isUserExists.isPresent());
-
         if (isUserExists.isPresent()) {
             return SignupCheckResponse.builder()
                     .isDuplicated(false)
@@ -101,11 +98,10 @@ public class UserService {
                 .build();
     }
 
+    @Transactional
     public SignInResponse loginUser(SignInRequest signInRequest) {
         Optional<UserEntity> isUserExists =
                 userRepository.findByUserid(signInRequest.getUserid());
-
-        System.out.println("널 값이 맞습니까?" + isUserExists.isPresent());
 
         if (isUserExists.isEmpty()) {
             return SignInResponse.builder()
@@ -120,6 +116,18 @@ public class UserService {
                     .isSuccess(false)
                     .message("비밀번호가 다릅니다.")
                     .build();
+        }
+
+        if (signInRequest.getFcmToken() != null) {
+            userRepository.save(
+                    new UserDto(isUserExists.get().getUserid(),
+                            isUserExists.get().getPassword(),
+                            isUserExists.get().getAddress(),
+                            isUserExists.get().getPhonenum(),
+                            isUserExists.get().getResidentid(),
+                            signInRequest.getFcmToken())
+                            .toEntity()
+            );
         }
 
         return SignInResponse.builder()

@@ -15,9 +15,13 @@ public class SignInRequest {
     @NotBlank
     private String password;
 
+    @NotBlank
+    private String fcmToken;
+
     @Builder
-    public SignInRequest(String userid, String password) {
+    public SignInRequest(String userid, String password, String fcmToken) {
         this.userid = userid;
         this.password = password;
+        this.fcmToken = fcmToken;
     }
 }

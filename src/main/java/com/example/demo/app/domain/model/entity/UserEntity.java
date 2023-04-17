@@ -32,13 +32,17 @@ public class UserEntity {
     @Column(nullable = false)
     private String address;
 
+    @Column(nullable = false)
+    private String fcmToken;
+
     @Builder
-    public UserEntity(String userid, String password, String residentid, String phonenum, String address){
+    public UserEntity(String userid, String password, String residentid, String phonenum, String address, String fcmToken){
         this.userid = userid;
         this.password = password;
         this.residentid = residentid;
         this.phonenum = phonenum;
         this.address = address;
+        this.fcmToken = fcmToken;
     }
 
     public boolean checkPassword(String password) {

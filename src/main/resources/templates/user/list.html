@@ -12,6 +12,7 @@
             <th>Residentid</th>
             <th>Phonenum</th>
             <th>Address</th>
+            <th>FcmToken</th>
         </tr>
 
         <tr th:each="user: ${userinfoList}">
@@ -20,6 +21,7 @@
             <td th:text="${user.getResidentid()}"></td>
             <td th:text="${user.getPhonenum()}"></td>
             <td th:text="${user.getAddress()}"></td>
+            <td th:text="${user.getFcmToken()}"></td>
         </tr>
     </table>
 </body>

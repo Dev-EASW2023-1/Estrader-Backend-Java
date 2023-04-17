@@ -25,24 +25,24 @@ public class UserController {
 
     // 유저 저장
     @PostMapping("/add")
-    public String addUserinfoEntity(
+    public String addUserinfo(
             @RequestParam String userid,
             @RequestParam String password,
             @RequestParam String residentid,
             @RequestParam String phonenum,
-            @RequestParam String address
+            @RequestParam String address,
+            @RequestParam String fcmToken
     ) {
-        System.out.println("야옹");
-        UserService.addUserinfo(userid,password, residentid, phonenum, address);
+        UserService.addUserinfo(userid,password, residentid, phonenum, address, fcmToken);
+
         return "redirect:/user/list";
     }
 
     // 유저 리스트 출력
     @GetMapping("/list")
-    public String showUserinfoList(
+    public String showListUserinfo(
             Model model
     ) {
-        System.out.println("멍멍");
         List<UserEntity> userinfoList = userRepository.findAll();
         model.addAttribute("userinfoList", userinfoList);
 
@@ -50,42 +50,34 @@ public class UserController {
     }
 
     @GetMapping("/show-list")
-    public ResponseEntity<UserListDto> Test() {
-
-        org.springframework.http.HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
-        return new ResponseEntity<>(UserService.findUserinfo(), headers, HttpStatus.OK);
+    public ResponseEntity<UserListDto> showMember() {
+        return new ResponseEntity<>(UserService.findUserinfo(), getJsonHeader(), HttpStatus.OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterDataResponse> postMember(@RequestBody RegisterDataRequest registerDataRequest) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
-        return new ResponseEntity<>(UserService.registerUserinfo(registerDataRequest), headers, HttpStatus.OK);
+    public ResponseEntity<RegisterDataResponse> postMember(
+            @RequestBody RegisterDataRequest registerDataRequest
+    ) {
+        return new ResponseEntity<>(UserService.registerUserinfo(registerDataRequest), getJsonHeader(), HttpStatus.OK);
     }
 
     @PostMapping("/account-exists")
-    public ResponseEntity<SignupCheckResponse> checkMember(@RequestBody SignupCheckRequest signupCheckRequest) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
-        System.out.println("내 아이디는?" + signupCheckRequest.getUserid());
-
-        return new ResponseEntity<>(UserService.checkDuplicateUserinfo(signupCheckRequest), headers, HttpStatus.OK);
+    public ResponseEntity<SignupCheckResponse> checkMember(
+            @RequestBody SignupCheckRequest signupCheckRequest
+    ) {
+        return new ResponseEntity<>(UserService.checkDuplicateUserinfo(signupCheckRequest), getJsonHeader(), HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<SignInResponse> checkMember(@RequestBody SignInRequest signInRequest) {
+    public ResponseEntity<SignInResponse> loginMember(
+            @RequestBody SignInRequest signInRequest
+    ) {
+        return new ResponseEntity<>(UserService.loginUser(signInRequest), getJsonHeader(), HttpStatus.OK);
+    }
 
+    private HttpHeaders getJsonHeader() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
-        System.out.println("내 아이디는?" + signInRequest.getUserid());
-
-        return new ResponseEntity<>(UserService.loginUser(signInRequest), headers, HttpStatus.OK);
+        return headers;
     }
 }

@@ -63,11 +63,13 @@ public class ItemController {
 
     @GetMapping("/show-list")
     public ResponseEntity<ItemListDto> Test() {
+        return new ResponseEntity<>(itemService.findUser(), getJsonHeader(), HttpStatus.OK);
+    }
 
+    private HttpHeaders getJsonHeader() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
-        return new ResponseEntity<>(itemService.findUser(), headers, HttpStatus.OK);
+        return headers;
     }
 }
 
