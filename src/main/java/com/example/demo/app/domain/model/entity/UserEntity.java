@@ -36,7 +36,8 @@ public class UserEntity {
     private String fcmToken;
 
     @Builder
-    public UserEntity(String userid, String password, String residentid, String phonenum, String address, String fcmToken){
+    public UserEntity(Long id, String userid, String password, String residentid, String phonenum, String address, String fcmToken){
+        this.id = id;
         this.userid = userid;
         this.password = password;
         this.residentid = residentid;

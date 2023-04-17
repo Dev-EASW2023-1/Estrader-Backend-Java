@@ -120,13 +120,15 @@ public class UserService {
 
         if (signInRequest.getFcmToken() != null) {
             userRepository.save(
-                    new UserDto(isUserExists.get().getUserid(),
-                            isUserExists.get().getPassword(),
-                            isUserExists.get().getAddress(),
-                            isUserExists.get().getPhonenum(),
-                            isUserExists.get().getResidentid(),
-                            signInRequest.getFcmToken())
-                            .toEntity()
+                    UserEntity.builder()
+                            .id(isUserExists.get().getId())
+                            .userid(isUserExists.get().getUserid())
+                            .password(isUserExists.get().getPassword())
+                            .residentid(isUserExists.get().getResidentid())
+                            .phonenum(isUserExists.get().getPhonenum())
+                            .address(isUserExists.get().getAddress())
+                            .fcmToken(signInRequest.getFcmToken())
+                            .build()
             );
         }
 

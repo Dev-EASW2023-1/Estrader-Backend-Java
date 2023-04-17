@@ -68,7 +68,7 @@ public class UserController {
         return new ResponseEntity<>(UserService.checkDuplicateUserinfo(signupCheckRequest), getJsonHeader(), HttpStatus.OK);
     }
 
-    @PostMapping("/login")
+    @PatchMapping("/login")
     public ResponseEntity<SignInResponse> loginMember(
             @RequestBody SignInRequest signInRequest
     ) {
