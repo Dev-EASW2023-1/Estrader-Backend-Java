@@ -3,6 +3,7 @@ package com.example.demo.app.domain.controller;
 import com.example.demo.app.domain.model.dto.*;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.UserRepository;
+import com.example.demo.app.domain.service.FirebaseCloudMessageService;
 import com.example.demo.app.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import java.util.List;
 public class UserController {
     private final UserRepository userRepository;
     private final UserService UserService;
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     // 유저 저장
     @PostMapping("/add")
@@ -51,28 +53,50 @@ public class UserController {
 
     @GetMapping("/show-list")
     public ResponseEntity<UserListDto> showMember() {
-        return new ResponseEntity<>(UserService.findUserinfo(), getJsonHeader(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                UserService.findUserinfo(),
+                getJsonHeader(),
+                HttpStatus.OK);
     }
 
     @PostMapping("/register")
     public ResponseEntity<RegisterDataResponse> postMember(
             @RequestBody RegisterDataRequest registerDataRequest
     ) {
-        return new ResponseEntity<>(UserService.registerUserinfo(registerDataRequest), getJsonHeader(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                UserService.registerUserinfo(registerDataRequest),
+                getJsonHeader(),
+                HttpStatus.OK);
     }
 
     @PostMapping("/account-exists")
     public ResponseEntity<SignupCheckResponse> checkMember(
             @RequestBody SignupCheckRequest signupCheckRequest
     ) {
-        return new ResponseEntity<>(UserService.checkDuplicateUserinfo(signupCheckRequest), getJsonHeader(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                UserService.checkDuplicateUserinfo(signupCheckRequest),
+                getJsonHeader(),
+                HttpStatus.OK);
     }
 
     @PatchMapping("/login")
     public ResponseEntity<SignInResponse> loginMember(
             @RequestBody SignInRequest signInRequest
     ) {
-        return new ResponseEntity<>(UserService.loginUser(signInRequest), getJsonHeader(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                UserService.loginUser(signInRequest),
+                getJsonHeader(),
+                HttpStatus.OK);
+    }
+
+    @PostMapping("/fcm")
+    public ResponseEntity<FcmResponse> pushMember(
+            @RequestBody FcmRequest fcmRequest
+    ) {
+        return new ResponseEntity<>(
+                UserService.sendByToken(fcmRequest),
+                getJsonHeader(),
+                HttpStatus.OK);
     }
 
     private HttpHeaders getJsonHeader() {

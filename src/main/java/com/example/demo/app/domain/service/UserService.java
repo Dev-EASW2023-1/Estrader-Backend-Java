@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     @Transactional
     public void addUserinfo(
@@ -135,6 +137,37 @@ public class UserService {
         return SignInResponse.builder()
                 .isSuccess(true)
                 .message("로그인에 성공했습니다.")
+                .build();
+    }
+
+    public FcmResponse sendByToken(FcmRequest fcmRequest) {
+        Optional<UserEntity> isUserExists =
+                userRepository.findByUserid(fcmRequest.getUserid());
+
+        if (isUserExists.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        System.out.println("아이디는 잘 찾았나요?");
+
+        try {
+            firebaseCloudMessageService.sendMessageTo(
+                    isUserExists.get().getFcmToken(),
+                    fcmRequest.getTitle(),
+                    fcmRequest.getBody()
+            );
+
+            System.out.println("메시지 시도는 했나요?");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return FcmResponse.builder()
+                    .message("전송에 실패하였습니다.")
+                    .isSuccess(false)
+                    .build();
+        }
+        return FcmResponse.builder()
+                .message("전송에 성공하였습니다.")
+                .isSuccess(true)
                 .build();
     }
 }
