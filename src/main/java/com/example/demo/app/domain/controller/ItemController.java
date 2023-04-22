@@ -27,36 +27,20 @@ public class ItemController {
 
     // 아이템 파라미터 입력 페이지 출력
     @GetMapping("")
-    public String inputPage(){
+    public String inputPage() {
         return "item/index";
     }
 
     // 아이템 저장
     @PostMapping("/add")
-    public String addUserEntity(
-            @RequestParam String picture,
-            @RequestParam String information,
-            @RequestParam String period,
-            @RequestParam String location,
-            @RequestParam String reserveprice,
-            @RequestParam String auctionperiod
-    ) {
-        itemService.addItem(
-                picture,
-                information,
-                period,
-                location,
-                reserveprice,
-                auctionperiod
-        );
+    public String addUserEntity(@RequestParam String picture, @RequestParam String information, @RequestParam String period, @RequestParam String location, @RequestParam String reserveprice, @RequestParam String auctionperiod) {
+        itemService.addItem(picture, information, period, location, reserveprice, auctionperiod);
         return "redirect:/item/list";
     }
 
     // 아이템 리스트 출력
     @GetMapping("/list")
-    public String showItemListForModel(
-            Model model
-    ) {
+    public String showItemListForModel(Model model) {
         List<ItemEntity> itemList = itemRepository.findAll();
         model.addAttribute("itemList", itemList);
 
@@ -69,7 +53,8 @@ public class ItemController {
     }
 
     @PostMapping("/show")
-    public ResponseEntity<ItemDto> showItem(LookUpItemRequest lookUpItemRequest) {
+    public ResponseEntity<ItemDto> showItem(@RequestBody LookUpItemRequest lookUpItemRequest) {
+
         return new ResponseEntity<>(itemService.lookupItem(lookUpItemRequest), getJsonHeader(), HttpStatus.OK);
     }
 
