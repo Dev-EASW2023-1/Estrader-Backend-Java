@@ -68,7 +68,7 @@ public class ItemController {
         return new ResponseEntity<>(itemService.findItemList(), getJsonHeader(), HttpStatus.OK);
     }
 
-    @GetMapping("/show")
+    @PostMapping("/show")
     public ResponseEntity<ItemDto> showItem(LookUpItemRequest lookUpItemRequest) {
         return new ResponseEntity<>(itemService.lookupItem(lookUpItemRequest), getJsonHeader(), HttpStatus.OK);
     }
