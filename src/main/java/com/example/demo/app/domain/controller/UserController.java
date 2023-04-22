@@ -3,7 +3,6 @@ package com.example.demo.app.domain.controller;
 import com.example.demo.app.domain.model.dto.*;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.UserRepository;
-import com.example.demo.app.domain.service.FirebaseCloudMessageService;
 import com.example.demo.app.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +22,6 @@ import java.util.List;
 public class UserController {
     private final UserRepository userRepository;
     private final UserService UserService;
-    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     // 유저 저장
     @PostMapping("/add")

@@ -22,11 +22,13 @@ public class FirebaseCloudMessageService {
     public void sendMessageTo(
             String targetToken,
             String title,
-            String body
+            String body,
+            String userId,
+            String targetId,
+            String itemImage,
+            String phase
     ) throws IOException {
-        String message = makeMessage(targetToken, title, body);
-
-        System.out.println("메시지는요?" + message);
+        String message = makeMessage(targetToken, title, body, userId, targetId, itemImage, phase);
 
         // OkHttp 클라이언트 객체 생성
         OkHttpClient client = new OkHttpClient();
@@ -58,7 +60,11 @@ public class FirebaseCloudMessageService {
     private String makeMessage(
             String targetToken,
             String title,
-            String body
+            String body,
+            String userId,
+            String targetId,
+            String itemImage,
+            String phase
     ) throws JsonProcessingException {
 
         FcmMessageDto fcmMessage =
@@ -71,6 +77,14 @@ public class FirebaseCloudMessageService {
                                 .title(title)
                                 .body(body)
                                 .build()
+                        )
+                        .data(
+                                FcmMessageDto.Data.builder()
+                                        .userId(userId)
+                                        .targetId(targetId)
+                                        .itemImage(itemImage)
+                                        .phase(phase)
+                                        .build()
                         )
                         .build()
                 )

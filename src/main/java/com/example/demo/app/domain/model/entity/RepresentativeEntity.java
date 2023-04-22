@@ -1,5 +1,6 @@
 package com.example.demo.app.domain.model.entity;
 
+import com.example.demo.app.domain.model.util.HashUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,15 @@ public class RepresentativeEntity {
 
     @Builder
     public RepresentativeEntity(String username, String password, String fcmToken, String corporateRegistrationNumber){
+        this.username = username;
+        this.password = HashUtil.sha256(password);
+        this.fcmToken = fcmToken;
+        this.corporateRegistrationNumber = corporateRegistrationNumber;
+    }
+
+    @Builder(builderMethodName = "login", builderClassName = "login")
+    public RepresentativeEntity(Long id, String username, String password, String fcmToken, String corporateRegistrationNumber){
+        this.id = id;
         this.username = username;
         this.password = password;
         this.fcmToken = fcmToken;

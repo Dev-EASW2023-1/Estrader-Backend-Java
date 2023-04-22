@@ -1,6 +1,8 @@
 package com.example.demo.app.domain.controller;
 
+import com.example.demo.app.domain.model.dto.ItemDto;
 import com.example.demo.app.domain.model.dto.ItemListDto;
+import com.example.demo.app.domain.model.dto.LookUpItemRequest;
 import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.service.ItemService;
@@ -52,7 +54,7 @@ public class ItemController {
 
     // 아이템 리스트 출력
     @GetMapping("/list")
-    public String showItemList(
+    public String showItemListForModel(
             Model model
     ) {
         List<ItemEntity> itemList = itemRepository.findAll();
@@ -62,8 +64,13 @@ public class ItemController {
     }
 
     @GetMapping("/show-list")
-    public ResponseEntity<ItemListDto> Test() {
-        return new ResponseEntity<>(itemService.findUser(), getJsonHeader(), HttpStatus.OK);
+    public ResponseEntity<ItemListDto> showItemList() {
+        return new ResponseEntity<>(itemService.findItemList(), getJsonHeader(), HttpStatus.OK);
+    }
+
+    @GetMapping("/show")
+    public ResponseEntity<ItemDto> showItem(LookUpItemRequest lookUpItemRequest) {
+        return new ResponseEntity<>(itemService.lookupItem(lookUpItemRequest), getJsonHeader(), HttpStatus.OK);
     }
 
     private HttpHeaders getJsonHeader() {

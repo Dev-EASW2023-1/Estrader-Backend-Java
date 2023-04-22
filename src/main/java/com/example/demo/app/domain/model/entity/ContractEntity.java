@@ -1,5 +1,6 @@
 package com.example.demo.app.domain.model.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,12 +16,23 @@ public class ContractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private UserEntity user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private RepresentativeEntity representative;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private ItemEntity item;
+
+    @Builder
+    public ContractEntity(
+            UserEntity user,
+            RepresentativeEntity representative,
+            ItemEntity item
+    ) {
+        this.user = user;
+        this.representative = representative;
+        this.item = item;
+    }
 }

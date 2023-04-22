@@ -10,7 +10,16 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class FcmRequest {
     @NotBlank
-    private String userid;
+    private String userId;
+
+    @NotBlank
+    private String targetId;
+
+    @NotBlank
+    private String itemImage;
+
+    @NotBlank
+    private String phase;
 
     @NotBlank
     private String title;
@@ -19,8 +28,11 @@ public class FcmRequest {
     private String body;
 
     @Builder
-    public FcmRequest(String userid, String title, String body) {
-        this.userid = userid;
+    public FcmRequest(String userId, String targetId, String itemImage, String phase, String title, String body) {
+        this.userId = userId;
+        this.targetId = targetId;
+        this.itemImage = itemImage;
+        this.phase = phase;
         this.title = title;
         this.body = body;
     }

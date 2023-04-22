@@ -1,7 +1,11 @@
 package com.example.demo.app.domain.service;
 
 import com.example.demo.app.domain.model.dto.*;
+import com.example.demo.app.domain.model.entity.ItemEntity;
+import com.example.demo.app.domain.model.entity.RepresentativeEntity;
 import com.example.demo.app.domain.model.entity.UserEntity;
+import com.example.demo.app.domain.repository.ItemRepository;
+import com.example.demo.app.domain.repository.RepresentativeRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +20,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final RepresentativeRepository representativeRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
+    private final ItemRepository itemRepository;
 
     @Transactional
     public void addUserinfo(
@@ -40,10 +46,6 @@ public class UserService {
 
     public UserListDto findUserinfo() {
         List<UserEntity> listUserinfo = userRepository.findAll();
-
-        if (listUserinfo == null) {
-            throw new IllegalArgumentException();
-        }
 
         List<UserDto> listUserDto = listUserinfo.stream()
                 .map(m -> new UserDto(
@@ -141,23 +143,22 @@ public class UserService {
     }
 
     public FcmResponse sendByToken(FcmRequest fcmRequest) {
-        Optional<UserEntity> isUserExists =
-                userRepository.findByUserid(fcmRequest.getUserid());
+        RepresentativeEntity isRepresentativeExists = representativeRepository.findByUsername(fcmRequest.getTargetId())
+                .orElseThrow(() -> new IllegalArgumentException("representative doesn't exist"));
 
-        if (isUserExists.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
-        System.out.println("아이디는 잘 찾았나요?");
+        itemRepository.findByPicture(fcmRequest.getItemImage())
+                .orElseThrow(() -> new IllegalArgumentException("item doesn't exist"));
 
         try {
             firebaseCloudMessageService.sendMessageTo(
-                    isUserExists.get().getFcmToken(),
+                    isRepresentativeExists.getFcmToken(),
                     fcmRequest.getTitle(),
-                    fcmRequest.getBody()
+                    fcmRequest.getBody(),
+                    fcmRequest.getUserId(),
+                    fcmRequest.getTargetId(),
+                    fcmRequest.getItemImage(),
+                    fcmRequest.getPhase()
             );
-
-            System.out.println("메시지 시도는 했나요?");
         } catch (IOException e) {
             e.printStackTrace();
             return FcmResponse.builder()
