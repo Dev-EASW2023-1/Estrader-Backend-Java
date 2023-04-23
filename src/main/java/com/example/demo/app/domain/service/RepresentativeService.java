@@ -100,7 +100,7 @@ public class RepresentativeService {
     }
 
     public FcmResponse sendByToken(FcmRequest fcmRequest) {
-        UserEntity isUserExists = userRepository.findByUserid(fcmRequest.getUserId())
+        UserEntity isUserExists = userRepository.findByUserid(fcmRequest.getTargetId())
                 .orElseThrow(() -> new IllegalArgumentException("user doesn't exist"));
 
         itemRepository.findByPicture(fcmRequest.getItemImage())
