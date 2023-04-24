@@ -1,9 +1,6 @@
 package com.example.demo.app.domain.service;
 
-import com.example.demo.app.domain.model.dto.ContractRequest;
-import com.example.demo.app.domain.model.dto.ContractResponse;
-import com.example.demo.app.domain.model.dto.ItemDto;
-import com.example.demo.app.domain.model.dto.ItemListDto;
+import com.example.demo.app.domain.model.dto.*;
 import com.example.demo.app.domain.model.entity.ContractEntity;
 import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.model.entity.RepresentativeEntity;
@@ -41,12 +38,14 @@ public class ContractService {
         Optional<ItemEntity> isItemExists =
                 itemRepository.findByPicture(contractRequest.getItemId());
 
-        Optional<ContractEntity> isContractExists =
-                contractRepository.findAllByItem_InformationAndRepresentative_UsernameAndUser_Userid(
-                        contractRequest.getItemId(),
+        List<ContractEntity> isContractExists =
+                contractRepository.findItemByThreeParams(
+                        contractRequest.getUserId(),
                         contractRequest.getRepresentativeId(),
-                        contractRequest.getUserId()
+                        contractRequest.getItemId()
                 );
+
+        System.out.println("URL은 잘 왔나요~~?" + contractRequest.getItemId());
 
         if (isUserExists.isEmpty() || isRepresentativeExists.isEmpty() || isItemExists.isEmpty()) {
             return ContractResponse.builder()
@@ -55,7 +54,7 @@ public class ContractService {
                     .build();
         }
 
-        if (isContractExists.isPresent()) {
+        if (!isContractExists.isEmpty()) {
             return ContractResponse.builder()
                     .isSuccess(false)
                     .message("이미 계약이 존재합니다.")
@@ -76,8 +75,12 @@ public class ContractService {
                 .build();
     }
 
-    public ItemListDto findItem() {
-        List<ContractEntity> listItem = contractRepository.findAllWithItem();
+    public ItemListDto findItemByContract(ItemInContractDto itemInContractDto) {
+        List<ContractEntity> listItem = contractRepository.findItemByThreeParams(
+                itemInContractDto.getUserId(),
+                itemInContractDto.getRepresentativeId(),
+                itemInContractDto.getItemId()
+        );
 
         List<ItemDto> listItemDto = listItem.stream()
                 .map(m -> new ItemDto(
@@ -92,6 +95,52 @@ public class ContractService {
 
         return ItemListDto.builder()
                 .itemDto(listItemDto)
+                .build();
+    }
+
+    // Contract 테이블 JPQL @Query 사용, Fetch Join 으로 N+1 문제 방지
+    public ItemListDto ContractTest1(String userId, String representativeId, String itemId) {
+        List<ContractEntity> listContract = contractRepository.findAllByLocationAndRepresentativeAndUserId(
+                userId,
+                representativeId,
+                itemId
+        );
+
+        List<ItemDto> listItemDto = listContract.stream()
+                .map(m -> new ItemDto(
+                        m.getItem().getPicture(),
+                        m.getItem().getInformation(),
+                        m.getItem().getPeriod(),
+                        m.getItem().getLocation(),
+                        m.getItem().getReserveprice(),
+                        m.getItem().getAuctionperiod()
+                ))
+                .collect(Collectors.toList());
+
+        return ItemListDto.builder()
+                .itemDto(listItemDto)
+                .build();
+    }
+
+    // Contract 테이블 쿼리 메소드 사용
+    public ItemDto ContractTest2(String userId, String representativeId, String itemId) {
+        Optional<ContractEntity> test = contractRepository.findAllByItem_InformationAndRepresentative_UsernameAndUser_Userid(
+                itemId,
+                representativeId,
+                userId
+        );
+
+        if (test.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        return ItemDto.builder()
+                .picture(test.get().getItem().getPicture())
+                .information(test.get().getItem().getInformation())
+                .period(test.get().getItem().getPeriod())
+                .location(test.get().getItem().getLocation())
+                .reserveprice(test.get().getItem().getReserveprice())
+                .auctionperiod(test.get().getItem().getAuctionperiod())
                 .build();
     }
 }
