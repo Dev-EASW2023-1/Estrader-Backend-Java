@@ -38,7 +38,7 @@ public class ContractService {
         Optional<ItemEntity> isItemExists =
                 itemRepository.findByPicture(contractRequest.getItemId());
 
-        List<ContractEntity> isContractExists =
+        Optional<ContractEntity> isContractExists =
                 contractRepository.findItemByThreeParams(
                         contractRequest.getUserId(),
                         contractRequest.getRepresentativeId(),
@@ -54,7 +54,7 @@ public class ContractService {
                     .build();
         }
 
-        if (!isContractExists.isEmpty()) {
+        if (isContractExists.isPresent()) {
             return ContractResponse.builder()
                     .isSuccess(false)
                     .message("이미 계약이 존재합니다.")
@@ -75,26 +75,24 @@ public class ContractService {
                 .build();
     }
 
-    public ItemListDto findItemByContract(ItemInContractDto itemInContractDto) {
-        List<ContractEntity> listItem = contractRepository.findItemByThreeParams(
+    public ItemDto findItemByContract(ItemInContractDto itemInContractDto) {
+        Optional<ContractEntity> contract = contractRepository.findItemByThreeParams(
                 itemInContractDto.getUserId(),
                 itemInContractDto.getRepresentativeId(),
                 itemInContractDto.getItemId()
         );
 
-        List<ItemDto> listItemDto = listItem.stream()
-                .map(m -> new ItemDto(
-                        m.getItem().getPicture(),
-                        m.getItem().getInformation(),
-                        m.getItem().getPeriod(),
-                        m.getItem().getLocation(),
-                        m.getItem().getReserveprice(),
-                        m.getItem().getAuctionperiod()
-                ))
-                .collect(Collectors.toList());
+        if(contract.isEmpty()){
+            throw new IllegalArgumentException();
+        }
 
-        return ItemListDto.builder()
-                .itemDto(listItemDto)
+        return ItemDto.builder()
+                .picture(contract.get().getItem().getPicture())
+                .information(contract.get().getItem().getInformation())
+                .period(contract.get().getItem().getPeriod())
+                .location(contract.get().getItem().getLocation())
+                .reserveprice(contract.get().getItem().getReserveprice())
+                .auctionperiod(contract.get().getItem().getAuctionperiod())
                 .build();
     }
 
@@ -151,29 +149,20 @@ public class ContractService {
         // UserId, RepresentativeId, ItemId 세 개의 매기변수를 받고(Where 절) 그에 맞는 DB 값 반환
 
         // DB 값 긁어오는 것까지 완료
-        List<ContractEntity> listItem = contractRepository.findItemByThreeParams(
+        Optional<ContractEntity> contract = contractRepository.findItemByThreeParams(
                 contractInfoRequest.getUserId(),
                 contractInfoRequest.getRepresentativeId(),
                 contractInfoRequest.getItemId()
         );
 
-        // Entity 를 DTO 로 가공
-
-        List<ItemDto> listItemDto = listItem.stream()
-                .map(m -> new ItemDto(
-                        m.getItem().getPicture(),
-                        m.getItem().getInformation(),
-                        m.getItem().getPeriod(),
-                        m.getItem().getLocation(),
-                        m.getItem().getReserveprice(),
-                        m.getItem().getAuctionperiod()
-                ))
-                .collect(Collectors.toList());
+        if(contract.isEmpty()){
+            throw new IllegalArgumentException();
+        }
 
         return ContractInfoResponse.builder()
-                .information(listItem.get(0).getItem().getInformation())
-                .auctionperiod(listItem.get(0).getItem().getAuctionperiod())
-                .reserveprice(listItem.get(0).getItem().getReserveprice())
+                .information(contract.get().getItem().getInformation())
+                .auctionperiod(contract.get().getItem().getAuctionperiod())
+                .reserveprice(contract.get().getItem().getReserveprice())
                 .build();
     }
 }

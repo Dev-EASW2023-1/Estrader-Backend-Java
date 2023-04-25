@@ -39,5 +39,5 @@ public interface ContractRepository extends CrudRepository<ContractEntity, Long>
             "left join fetch m.representative r " +
             "left join fetch m.user u " +
             "where i.picture = :itemId and r.username = :representativeId and u.userid = :userId")
-    List<ContractEntity> findItemByThreeParams(@Param("userId") String userId, @Param("representativeId") String representativeId, @Param("itemId") String itemId);
+    Optional<ContractEntity> findItemByThreeParams(@Param("userId") String userId, @Param("representativeId") String representativeId, @Param("itemId") String itemId);
 }

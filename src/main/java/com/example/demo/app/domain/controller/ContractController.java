@@ -30,7 +30,7 @@ public class ContractController {
     }
 
     @PostMapping("/item")
-    public ResponseEntity<ItemListDto> findItem(
+    public ResponseEntity<ItemDto> findItem(
             @RequestBody ItemInContractDto itemInContractDto
     ) {
         return new ResponseEntity<>(
