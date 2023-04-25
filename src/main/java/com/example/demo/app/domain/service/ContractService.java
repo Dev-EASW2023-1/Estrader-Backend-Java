@@ -143,4 +143,37 @@ public class ContractService {
                 .auctionperiod(test.get().getItem().getAuctionperiod())
                 .build();
     }
+
+    public ContractInfoResponse findContractInfo(ContractInfoRequest contractInfoRequest){
+        // Request : 앱에서 서버로 보내는 것
+        // Response : 서버에서 앱으로 보내는 것
+
+        // UserId, RepresentativeId, ItemId 세 개의 매기변수를 받고(Where 절) 그에 맞는 DB 값 반환
+
+        // DB 값 긁어오는 것까지 완료
+        List<ContractEntity> listItem = contractRepository.findItemByThreeParams(
+                contractInfoRequest.getUserId(),
+                contractInfoRequest.getRepresentativeId(),
+                contractInfoRequest.getItemId()
+        );
+
+        // Entity 를 DTO 로 가공
+
+        List<ItemDto> listItemDto = listItem.stream()
+                .map(m -> new ItemDto(
+                        m.getItem().getPicture(),
+                        m.getItem().getInformation(),
+                        m.getItem().getPeriod(),
+                        m.getItem().getLocation(),
+                        m.getItem().getReserveprice(),
+                        m.getItem().getAuctionperiod()
+                ))
+                .collect(Collectors.toList());
+
+        return ContractInfoResponse.builder()
+                .information(listItem.get(0).getItem().getInformation())
+                .auctionperiod(listItem.get(0).getItem().getAuctionperiod())
+                .reserveprice(listItem.get(0).getItem().getReserveprice())
+                .build();
+    }
 }

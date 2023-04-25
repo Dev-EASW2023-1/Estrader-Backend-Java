@@ -65,6 +65,15 @@ public class ContractController {
                 getJsonHeader(),
                 HttpStatus.OK);
     }
+    @PostMapping("/findinfo")
+    public ResponseEntity<ContractInfoResponse> PdfItem(
+            @RequestBody ContractInfoRequest contractInfoRequest
+    ){
+        return new ResponseEntity<>(
+                contractService.findContractInfo(contractInfoRequest),
+                getJsonHeader(),
+                HttpStatus.OK);
+    }
 
     private HttpHeaders getJsonHeader() {
         HttpHeaders headers = new HttpHeaders();
