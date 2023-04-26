@@ -30,7 +30,7 @@ public class RealtorService {
 
     @Transactional
     public void addRealtorInfo(
-            String userId,
+            String realtorId,
             String password,
             String name,
             String residentNumber,
@@ -40,7 +40,7 @@ public class RealtorService {
             String fcmToken
     ) {
         RealtorEntity representativeInfo = RealtorEntity.builder()
-                .userId(userId)
+                .realtorId(realtorId)
                 .password(password)
                 .name(name)
                 .residentNumber(residentNumber)
@@ -57,7 +57,7 @@ public class RealtorService {
 
         List<RealtorDto> listRealtorDto = listRealtorInfo.stream()
                 .map(m -> new RealtorDto(
-                        m.getUserId(),
+                        m.getRealtorId(),
                         m.getPassword(),
                         m.getName(),
                         m.getResidentNumber(),
@@ -76,7 +76,7 @@ public class RealtorService {
     @Transactional
     public RealtorSignInResponse loginRealtor(RealtorSignInRequest realtorSignInRequest) {
         Optional<RealtorEntity> isRealtorExists =
-                realtorRepository.findByUserId(realtorSignInRequest.getUserId());
+                realtorRepository.findByRealtorId(realtorSignInRequest.getRealtorId());
 
         if (isRealtorExists.isEmpty()) {
             return RealtorSignInResponse.builder()
@@ -101,7 +101,7 @@ public class RealtorService {
             realtorRepository.save(
                     RealtorEntity.login()
                             .id(isRealtorExists.get().getId())
-                            .userId(isRealtorExists.get().getUserId())
+                            .realtorId(isRealtorExists.get().getRealtorId())
                             .password(isRealtorExists.get().getPassword())
                             .name(isRealtorExists.get().getName())
                             .residentNumber(isRealtorExists.get().getResidentNumber())

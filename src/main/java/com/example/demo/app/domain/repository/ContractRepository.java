@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ContractRepository extends CrudRepository<ContractEntity, Long> {
 
-    Optional<ContractEntity> findAllByItem_CaseNumberAndRealtor_UserIdAndUser_UserId(
+    Optional<ContractEntity> findAllByItem_CaseNumberAndRealtor_RealtorIdAndUser_UserId(
             String caseNumber,
             String realtorId,
             String userId
@@ -31,13 +31,13 @@ public interface ContractRepository extends CrudRepository<ContractEntity, Long>
             "left join fetch m.item i " +
             "left join fetch m.realtor r " +
             "left join fetch m.user u " +
-            "where i.caseNumber = :caseNumber and r.userId = :realtorId and u.userId = :userId")
+            "where u.userId = :userId and r.realtorId = :realtorId and i.caseNumber = :caseNumber")
     List<ContractEntity> findAllByUserIdAndRealtorIdAndCaseNumber(@Param("userId") String userId, @Param("realtorId") String realtorId, @Param("caseNumber") String caseNumber);
 
     @Query("select distinct m from ContractEntity m " +
             "left join fetch m.item i " +
             "left join fetch m.realtor r " +
             "left join fetch m.user u " +
-            "where i.photo = :photo and r.userId = :realtorId and u.userId = :userId")
+            "where u.userId = :userId and r.realtorId = :realtorId and i.photo = :photo")
     Optional<ContractEntity> findItemByThreeParams(@Param("userId") String userId, @Param("realtorId") String realtorId, @Param("photo") String photo);
 }

@@ -13,5 +13,5 @@ public interface RealtorRepository extends CrudRepository<RealtorEntity, Long> {
     @Override
     List<RealtorEntity> findAll();
 
-    Optional<RealtorEntity> findByUserId(String userId);
+    Optional<RealtorEntity> findByRealtorId(String realtorId);
 }

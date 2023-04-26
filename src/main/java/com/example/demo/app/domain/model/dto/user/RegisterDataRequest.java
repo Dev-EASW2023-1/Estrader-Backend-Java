@@ -50,6 +50,7 @@ public class RegisterDataRequest {
         return UserEntity.builder()
                 .userId(userId)
                 .password(password)
+                .name(name)
                 .residentNumber(residentNumber)
                 .phoneNumber(phoneNumber)
                 .address(address)

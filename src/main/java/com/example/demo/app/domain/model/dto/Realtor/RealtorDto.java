@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class RealtorDto {
     @NotBlank
-    private String userId;
+    private String realtorId;
 
     @NotBlank
     private String password;
@@ -35,7 +35,7 @@ public class RealtorDto {
 
     @Builder
     public RealtorDto(
-            String userId,
+            String realtorId,
             String password,
             String name,
             String residentNumber,
@@ -44,7 +44,7 @@ public class RealtorDto {
             String corporateRegistrationNumber,
             String fcmToken
     ) {
-        this.userId = userId;
+        this.realtorId = realtorId;
         this.password = password;
         this.name = name;
         this.residentNumber = residentNumber;

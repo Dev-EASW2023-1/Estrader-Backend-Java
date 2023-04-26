@@ -35,7 +35,7 @@ public class ContractService {
                 userRepository.findByUserId(contractRequest.getUserId());
 
         Optional<RealtorEntity> isRealtorExists =
-                realtorRepository.findByUserId(contractRequest.getRealtorId());
+                realtorRepository.findByRealtorId(contractRequest.getRealtorId());
 
         Optional<ItemEntity> isItemExists =
                 itemRepository.findByPhoto(contractRequest.getItemId());
@@ -130,7 +130,7 @@ public class ContractService {
 
     // Contract 테이블 쿼리 메소드 사용
     public ItemDto ContractTest2(String userId, String realtorId, String caseNumber) {
-        Optional<ContractEntity> test = contractRepository.findAllByItem_CaseNumberAndRealtor_UserIdAndUser_UserId(
+        Optional<ContractEntity> test = contractRepository.findAllByItem_CaseNumberAndRealtor_RealtorIdAndUser_UserId(
                 caseNumber,
                 realtorId,
                 userId
@@ -159,6 +159,8 @@ public class ContractService {
                 contractInfoRequest.getRealtorId(),
                 contractInfoRequest.getItemId()
         );
+
+        System.out.println("아이디는 잘 온 건가요? " + contractInfoRequest.getUserId());
 
         if(contract.isEmpty()){
             throw new IllegalArgumentException();

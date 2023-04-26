@@ -18,7 +18,7 @@ public class RealtorEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String userId;
+    private String realtorId;
 
     @Column(nullable = false)
     private String password;
@@ -41,8 +41,8 @@ public class RealtorEntity {
     private String fcmToken;
 
     @Builder
-    public RealtorEntity(String userId, String password, String name, String residentNumber, String phoneNumber, String address, String corporateRegistrationNumber, String fcmToken){
-        this.userId = userId;
+    public RealtorEntity(String realtorId, String password, String name, String residentNumber, String phoneNumber, String address, String corporateRegistrationNumber, String fcmToken){
+        this.realtorId = realtorId;
         this.password = HashUtil.sha256(password);
         this.name = name;
         this.residentNumber = residentNumber;
@@ -53,9 +53,9 @@ public class RealtorEntity {
     }
 
     @Builder(builderMethodName = "login", builderClassName = "login")
-    public RealtorEntity(Long id, String userId, String password, String name, String residentNumber, String phoneNumber, String address, String corporateRegistrationNumber, String fcmToken){
+    public RealtorEntity(Long id, String realtorId, String password, String name, String residentNumber, String phoneNumber, String address, String corporateRegistrationNumber, String fcmToken){
         this.id = id;
-        this.userId = userId;
+        this.realtorId = realtorId;
         this.password = password;
         this.name = name;
         this.residentNumber = residentNumber;

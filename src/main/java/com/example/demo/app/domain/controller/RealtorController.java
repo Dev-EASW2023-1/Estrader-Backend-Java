@@ -34,7 +34,7 @@ public class RealtorController {
 
     @PostMapping("/add")
     public String addRealtorInfo(
-            @RequestParam String userId,
+            @RequestParam String realtorId,
             @RequestParam String password,
             @RequestParam String name,
             @RequestParam String residentNumber,
@@ -44,7 +44,7 @@ public class RealtorController {
             @RequestParam String fcmToken
     ) {
         realtorService.addRealtorInfo(
-                userId,
+                realtorId,
                 password,
                 name,
                 residentNumber,

@@ -7,7 +7,7 @@
 <body>
     <table>
         <tr>
-            <th>UserId</th>
+            <th>RealtorId</th>
             <th>Password</th>
             <th>Name</th>
             <th>ResidentNumber</th>
@@ -18,7 +18,7 @@
         </tr>
 
         <tr th:each="realtor: ${realtorInfoList}">
-            <td th:text="${realtor.getUserId()}"></td>
+            <td th:text="${realtor.getRealtorId()}"></td>
             <td th:text="${realtor.getPassword()}"></td>
             <td th:text="${realtor.getName()}"></td>
             <td th:text="${realtor.getResidentNumber()}"></td>

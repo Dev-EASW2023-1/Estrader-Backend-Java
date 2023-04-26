@@ -152,7 +152,7 @@ public class UserService {
     }
 
     public FcmResponse sendByToken(FcmRequest fcmRequest) {
-        RealtorEntity isRealtorExists = realtorRepository.findByUserId(fcmRequest.getTargetId())
+        RealtorEntity isRealtorExists = realtorRepository.findByRealtorId(fcmRequest.getTargetId())
                 .orElseThrow(() -> new IllegalArgumentException("representative doesn't exist"));
 
         itemRepository.findByPhoto(fcmRequest.getItemImage())
