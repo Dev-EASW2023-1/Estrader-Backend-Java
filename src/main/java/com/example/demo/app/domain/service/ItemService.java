@@ -8,8 +8,6 @@ import com.example.demo.app.domain.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,7 +66,7 @@ public class ItemService {
 
     public ItemDto lookUpItem(LookUpItemRequest lookUpItemRequest) {
         Optional<ItemEntity> isItemExists =
-                itemRepository.findByPhoto(URLDecoder.decode(lookUpItemRequest.getPhoto(), StandardCharsets.UTF_8));
+                itemRepository.findByPhoto(lookUpItemRequest.getPhoto());
 
         if(isItemExists.isEmpty()){
             throw new IllegalArgumentException();

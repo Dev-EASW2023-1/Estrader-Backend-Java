@@ -19,10 +19,22 @@ public class ContractRequest {
     @NotBlank
     private String itemId;
 
+    @NotBlank
+    private String phase;
+
+    @NotBlank
+    private String title;
+
+    @NotBlank
+    private String body;
+
     @Builder
-    public ContractRequest(String userId, String realtorId, String itemId) {
+    public ContractRequest(String userId, String realtorId, String itemId, String phase, String title, String body) {
         this.userId = userId;
         this.realtorId = realtorId;
         this.itemId = itemId;
+        this.phase = phase;
+        this.title = title;
+        this.body = body;
     }
 }

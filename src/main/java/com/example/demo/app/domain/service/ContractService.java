@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class ContractService {
     private final RealtorRepository realtorRepository;
     private final ItemRepository itemRepository;
     private final ContractRepository contractRepository;
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     @Transactional
     public ContractResponse registerContract(ContractRequest contractRequest) {
@@ -47,9 +49,25 @@ public class ContractService {
                         contractRequest.getItemId()
                 );
 
-        System.out.println("URL은 잘 왔나요~~?" + contractRequest.getItemId());
-
         if (isUserExists.isEmpty() || isRealtorExists.isEmpty() || isItemExists.isEmpty()) {
+            return ContractResponse.builder()
+                    .isSuccess(false)
+                    .message("계약에 실패하였습니다.")
+                    .build();
+        }
+
+        try {
+            firebaseCloudMessageService.sendMessageTo(
+                    isRealtorExists.get().getFcmToken(),
+                    contractRequest.getTitle(),
+                    contractRequest.getBody(),
+                    contractRequest.getUserId(),
+                    contractRequest.getRealtorId(),
+                    contractRequest.getItemId(),
+                    contractRequest.getPhase()
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
             return ContractResponse.builder()
                     .isSuccess(false)
                     .message("계약에 실패하였습니다.")
