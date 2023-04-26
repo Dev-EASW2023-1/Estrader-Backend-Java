@@ -1,8 +1,8 @@
 package com.example.demo.app.domain.service;
 
-import com.example.demo.app.domain.model.dto.ItemDto;
-import com.example.demo.app.domain.model.dto.ItemListDto;
-import com.example.demo.app.domain.model.dto.LookUpItemRequest;
+import com.example.demo.app.domain.model.dto.item.ItemDto;
+import com.example.demo.app.domain.model.dto.item.ItemListDto;
+import com.example.demo.app.domain.model.dto.item.LookUpItemRequest;
 import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +19,27 @@ import java.util.stream.Collectors;
 public class ItemService {
     private final ItemRepository itemRepository;
     public void addItem(
-            String picture,
-            String information,
-            String period,
+            String caseNumber,
+            String court,
             String location,
-            String reserveprice,
-            String auctionperiod
+            String minimumBidPrice,
+            String photo,
+            String biddingPeriod,
+            String itemType,
+            String note,
+            String managementNumber
 
     ) {
         ItemEntity item = ItemEntity.builder()
-                .picture(picture)
-                .information(information)
-                .period(period)
+                .caseNumber(caseNumber)
+                .court(court)
                 .location(location)
-                .reserveprice(reserveprice)
-                .auctionperiod(auctionperiod)
+                .minimumBidPrice(minimumBidPrice)
+                .photo(photo)
+                .biddingPeriod(biddingPeriod)
+                .itemType(itemType)
+                .note(note)
+                .managementNumber(managementNumber)
                 .build();
         itemRepository.save(item);
     }
@@ -42,7 +48,17 @@ public class ItemService {
         List<ItemEntity> listUser = itemRepository.findAll();
 
         List<ItemDto> listItemDto = listUser.stream()
-                .map(m -> new ItemDto(m.getPicture(), m.getInformation(), m.getPeriod(), m.getLocation(), m.getReserveprice(),m.getAuctionperiod()))
+                .map(m -> new ItemDto(
+                        m.getCaseNumber(),
+                        m.getCourt(),
+                        m.getLocation(),
+                        m.getMinimumBidPrice(),
+                        m.getPhoto(),
+                        m.getBiddingPeriod(),
+                        m.getItemType(),
+                        m.getNote(),
+                        m.getManagementNumber()
+                ))
                 .collect(Collectors.toList());
 
         return ItemListDto.builder()
@@ -50,21 +66,24 @@ public class ItemService {
                 .build();
     }
 
-    public ItemDto lookupItem(LookUpItemRequest lookUpItemRequest) {
+    public ItemDto lookUpItem(LookUpItemRequest lookUpItemRequest) {
         Optional<ItemEntity> isItemExists =
-                itemRepository.findByPicture(URLDecoder.decode(lookUpItemRequest.getPicture(), StandardCharsets.UTF_8));
+                itemRepository.findByPhoto(URLDecoder.decode(lookUpItemRequest.getPhoto(), StandardCharsets.UTF_8));
 
         if(isItemExists.isEmpty()){
             throw new IllegalArgumentException();
         }
 
         return ItemDto.builder()
-                .picture(isItemExists.get().getPicture())
-                .information(isItemExists.get().getInformation())
-                .period(isItemExists.get().getPeriod())
+                .caseNumber(isItemExists.get().getCaseNumber())
+                .court(isItemExists.get().getCourt())
                 .location(isItemExists.get().getLocation())
-                .reserveprice(isItemExists.get().getReserveprice())
-                .auctionperiod(isItemExists.get().getAuctionperiod())
+                .minimumBidPrice(isItemExists.get().getMinimumBidPrice())
+                .photo(isItemExists.get().getPhoto())
+                .biddingPeriod(isItemExists.get().getBiddingPeriod())
+                .itemType(isItemExists.get().getItemType())
+                .note(isItemExists.get().getNote())
+                .managementNumber(isItemExists.get().getManagementNumber())
                 .build();
     }
 }

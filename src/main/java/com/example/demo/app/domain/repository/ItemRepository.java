@@ -12,8 +12,7 @@ public interface ItemRepository extends CrudRepository<ItemEntity, Long> {
     @Override
     List<ItemEntity> findAll();
 
-    Optional<ItemEntity> findByInformation(String information);
+    Optional<ItemEntity> findByCaseNumber(String caseNumber);
 
-    Optional<ItemEntity> findByPicture(String picture);
-
+    Optional<ItemEntity> findByPhoto(String photo);
 }

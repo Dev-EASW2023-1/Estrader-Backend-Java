@@ -1,13 +1,15 @@
 package com.example.demo.app.domain.service;
 
-import com.example.demo.app.domain.model.dto.*;
+import com.example.demo.app.domain.model.dto.contract.*;
+import com.example.demo.app.domain.model.dto.item.ItemDto;
+import com.example.demo.app.domain.model.dto.item.ItemListDto;
 import com.example.demo.app.domain.model.entity.ContractEntity;
 import com.example.demo.app.domain.model.entity.ItemEntity;
-import com.example.demo.app.domain.model.entity.RepresentativeEntity;
+import com.example.demo.app.domain.model.entity.RealtorEntity;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.ContractRepository;
 import com.example.demo.app.domain.repository.ItemRepository;
-import com.example.demo.app.domain.repository.RepresentativeRepository;
+import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 public class ContractService {
 
     private final UserRepository userRepository;
-    private final RepresentativeRepository representativeRepository;
+    private final RealtorRepository realtorRepository;
     private final ItemRepository itemRepository;
     private final ContractRepository contractRepository;
 
@@ -30,24 +32,24 @@ public class ContractService {
     public ContractResponse registerContract(ContractRequest contractRequest) {
 
         Optional<UserEntity> isUserExists =
-                userRepository.findByUserid(contractRequest.getUserId());
+                userRepository.findByUserId(contractRequest.getUserId());
 
-        Optional<RepresentativeEntity> isRepresentativeExists =
-                representativeRepository.findByUsername(contractRequest.getRepresentativeId());
+        Optional<RealtorEntity> isRealtorExists =
+                realtorRepository.findByUserId(contractRequest.getRealtorId());
 
         Optional<ItemEntity> isItemExists =
-                itemRepository.findByPicture(contractRequest.getItemId());
+                itemRepository.findByPhoto(contractRequest.getItemId());
 
         Optional<ContractEntity> isContractExists =
                 contractRepository.findItemByThreeParams(
                         contractRequest.getUserId(),
-                        contractRequest.getRepresentativeId(),
+                        contractRequest.getRealtorId(),
                         contractRequest.getItemId()
                 );
 
         System.out.println("URL은 잘 왔나요~~?" + contractRequest.getItemId());
 
-        if (isUserExists.isEmpty() || isRepresentativeExists.isEmpty() || isItemExists.isEmpty()) {
+        if (isUserExists.isEmpty() || isRealtorExists.isEmpty() || isItemExists.isEmpty()) {
             return ContractResponse.builder()
                     .isSuccess(false)
                     .message("계약에 실패하였습니다.")
@@ -65,7 +67,7 @@ public class ContractService {
                 ContractEntity.builder()
                         .user(isUserExists.get())
                         .item(isItemExists.get())
-                        .representative(isRepresentativeExists.get())
+                        .realtor(isRealtorExists.get())
                         .build()
         );
 
@@ -78,7 +80,7 @@ public class ContractService {
     public ItemDto findItemByContract(ItemInContractDto itemInContractDto) {
         Optional<ContractEntity> contract = contractRepository.findItemByThreeParams(
                 itemInContractDto.getUserId(),
-                itemInContractDto.getRepresentativeId(),
+                itemInContractDto.getRealtorId(),
                 itemInContractDto.getItemId()
         );
 
@@ -87,31 +89,37 @@ public class ContractService {
         }
 
         return ItemDto.builder()
-                .picture(contract.get().getItem().getPicture())
-                .information(contract.get().getItem().getInformation())
-                .period(contract.get().getItem().getPeriod())
+                .caseNumber(contract.get().getItem().getCaseNumber())
+                .court(contract.get().getItem().getCourt())
                 .location(contract.get().getItem().getLocation())
-                .reserveprice(contract.get().getItem().getReserveprice())
-                .auctionperiod(contract.get().getItem().getAuctionperiod())
+                .minimumBidPrice(contract.get().getItem().getMinimumBidPrice())
+                .photo(contract.get().getItem().getPhoto())
+                .biddingPeriod(contract.get().getItem().getBiddingPeriod())
+                .itemType(contract.get().getItem().getItemType())
+                .note(contract.get().getItem().getNote())
+                .managementNumber(contract.get().getItem().getManagementNumber())
                 .build();
     }
 
     // Contract 테이블 JPQL @Query 사용, Fetch Join 으로 N+1 문제 방지
-    public ItemListDto ContractTest1(String userId, String representativeId, String itemId) {
-        List<ContractEntity> listContract = contractRepository.findAllByLocationAndRepresentativeAndUserId(
+    public ItemListDto ContractTest1(String userId, String realtorId, String caseNumber) {
+        List<ContractEntity> listContract = contractRepository.findAllByUserIdAndRealtorIdAndCaseNumber(
                 userId,
-                representativeId,
-                itemId
+                realtorId,
+                caseNumber
         );
 
         List<ItemDto> listItemDto = listContract.stream()
                 .map(m -> new ItemDto(
-                        m.getItem().getPicture(),
-                        m.getItem().getInformation(),
-                        m.getItem().getPeriod(),
+                        m.getItem().getCaseNumber(),
+                        m.getItem().getCourt(),
                         m.getItem().getLocation(),
-                        m.getItem().getReserveprice(),
-                        m.getItem().getAuctionperiod()
+                        m.getItem().getMinimumBidPrice(),
+                        m.getItem().getPhoto(),
+                        m.getItem().getBiddingPeriod(),
+                        m.getItem().getItemType(),
+                        m.getItem().getNote(),
+                        m.getItem().getManagementNumber()
                 ))
                 .collect(Collectors.toList());
 
@@ -121,10 +129,10 @@ public class ContractService {
     }
 
     // Contract 테이블 쿼리 메소드 사용
-    public ItemDto ContractTest2(String userId, String representativeId, String itemId) {
-        Optional<ContractEntity> test = contractRepository.findAllByItem_InformationAndRepresentative_UsernameAndUser_Userid(
-                itemId,
-                representativeId,
+    public ItemDto ContractTest2(String userId, String realtorId, String caseNumber) {
+        Optional<ContractEntity> test = contractRepository.findAllByItem_CaseNumberAndRealtor_UserIdAndUser_UserId(
+                caseNumber,
+                realtorId,
                 userId
         );
 
@@ -133,25 +141,22 @@ public class ContractService {
         }
 
         return ItemDto.builder()
-                .picture(test.get().getItem().getPicture())
-                .information(test.get().getItem().getInformation())
-                .period(test.get().getItem().getPeriod())
+                .caseNumber(test.get().getItem().getCaseNumber())
+                .court(test.get().getItem().getCourt())
                 .location(test.get().getItem().getLocation())
-                .reserveprice(test.get().getItem().getReserveprice())
-                .auctionperiod(test.get().getItem().getAuctionperiod())
+                .minimumBidPrice(test.get().getItem().getMinimumBidPrice())
+                .photo(test.get().getItem().getPhoto())
+                .biddingPeriod(test.get().getItem().getBiddingPeriod())
+                .itemType(test.get().getItem().getItemType())
+                .note(test.get().getItem().getNote())
+                .managementNumber(test.get().getItem().getManagementNumber())
                 .build();
     }
 
     public ContractInfoResponse findContractInfo(ContractInfoRequest contractInfoRequest){
-        // Request : 앱에서 서버로 보내는 것
-        // Response : 서버에서 앱으로 보내는 것
-
-        // UserId, RepresentativeId, ItemId 세 개의 매기변수를 받고(Where 절) 그에 맞는 DB 값 반환
-
-        // DB 값 긁어오는 것까지 완료
         Optional<ContractEntity> contract = contractRepository.findItemByThreeParams(
                 contractInfoRequest.getUserId(),
-                contractInfoRequest.getRepresentativeId(),
+                contractInfoRequest.getRealtorId(),
                 contractInfoRequest.getItemId()
         );
 
@@ -160,9 +165,10 @@ public class ContractService {
         }
 
         return ContractInfoResponse.builder()
-                .information(contract.get().getItem().getInformation())
-                .auctionperiod(contract.get().getItem().getAuctionperiod())
-                .reserveprice(contract.get().getItem().getReserveprice())
+                .caseNumber(contract.get().getItem().getCaseNumber())
+                .biddingPeriod(contract.get().getItem().getBiddingPeriod())
+                .minimumBidPrice(contract.get().getItem().getMinimumBidPrice())
+                .managementNumber(contract.get().getItem().getManagementNumber())
                 .build();
     }
 }

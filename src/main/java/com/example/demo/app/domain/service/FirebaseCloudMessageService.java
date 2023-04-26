@@ -1,6 +1,6 @@
 package com.example.demo.app.domain.service;
 
-import com.example.demo.app.domain.model.dto.FcmMessageDto;
+import com.example.demo.app.domain.model.dto.fcm.FcmMessageDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;

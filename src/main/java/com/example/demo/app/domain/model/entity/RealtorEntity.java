@@ -10,8 +10,8 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
-public class UserEntity {
+@Table(name = "realtor")
+public class RealtorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,16 +41,7 @@ public class UserEntity {
     private String fcmToken;
 
     @Builder
-    public UserEntity(
-            String userId,
-            String password,
-            String name,
-            String residentNumber,
-            String phoneNumber,
-            String address,
-            String corporateRegistrationNumber,
-            String fcmToken
-    ){
+    public RealtorEntity(String userId, String password, String name, String residentNumber, String phoneNumber, String address, String corporateRegistrationNumber, String fcmToken){
         this.userId = userId;
         this.password = HashUtil.sha256(password);
         this.name = name;
@@ -62,17 +53,7 @@ public class UserEntity {
     }
 
     @Builder(builderMethodName = "login", builderClassName = "login")
-    public UserEntity(
-            Long id,
-            String userId,
-            String password,
-            String name,
-            String residentNumber,
-            String phoneNumber,
-            String address,
-            String corporateRegistrationNumber,
-            String fcmToken
-    ){
+    public RealtorEntity(Long id, String userId, String password, String name, String residentNumber, String phoneNumber, String address, String corporateRegistrationNumber, String fcmToken){
         this.id = id;
         this.userId = userId;
         this.password = password;

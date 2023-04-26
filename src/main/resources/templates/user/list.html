@@ -7,20 +7,24 @@
 <body>
     <table>
         <tr>
-            <th>Userid</th>
+            <th>UserId</th>
             <th>Password</th>
-            <th>Residentid</th>
-            <th>Phonenum</th>
+            <th>Name</th>
+            <th>ResidentNumber</th>
+            <th>PhoneNumber</th>
             <th>Address</th>
+            <th>CorporateRegistrationNumber</th>
             <th>FcmToken</th>
         </tr>
 
         <tr th:each="user: ${userinfoList}">
-            <td th:text="${user.getUserid()}"></td>
+            <td th:text="${user.getUserId()}"></td>
             <td th:text="${user.getPassword()}"></td>
-            <td th:text="${user.getResidentid()}"></td>
-            <td th:text="${user.getPhonenum()}"></td>
+            <td th:text="${user.getName()}"></td>
+            <td th:text="${user.getResidentNumber()}"></td>
+            <td th:text="${user.getPhoneNumber()}"></td>
             <td th:text="${user.getAddress()}"></td>
+            <td th:text="${user.getCorporateRegistrationNumber()}"></td>
             <td th:text="${user.getFcmToken()}"></td>
         </tr>
     </table>

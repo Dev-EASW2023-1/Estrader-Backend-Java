@@ -7,21 +7,27 @@
 <body>
     <table>
         <tr>
-            <th>Picture</th>
-            <th>Information</th>
-            <th>Period</th>
+            <th>CaseNumber</th>
+            <th>Court</th>
             <th>Location</th>
-            <th>Reserveprice</th>
-            <th>Auctionperiod</th>
+            <th>MinimumBidPrice</th>
+            <th>Photo</th>
+            <th>BiddingPeriod</th>
+            <th>ItemType</th>
+            <th>Note</th>
+            <th>ManagementNumber</th>
         </tr>
 
         <tr th:each="item: ${itemList}">
-            <td th:text="${item.getPicture()}"></td>
-            <td th:text="${item.getInformation()}"></td>
-            <td th:text="${item.getPeriod()}"></td>
+            <td th:text="${item.getCaseNumber()}"></td>
+            <td th:text="${item.getCourt()}"></td>
             <td th:text="${item.getLocation()}"></td>
-            <td th:text="${item.getReserveprice()}"></td>
-            <td th:text="${item.getAuctionperiod()}"></td>
+            <td th:text="${item.getMinimumBidPrice()}"></td>
+            <td th:text="${item.getPhoto()}"></td>
+            <td th:text="${item.getBiddingPeriod()}"></td>
+            <td th:text="${item.getItemType()}"></td>
+            <td th:text="${item.getNote()}"></td>
+            <td th:text="${item.getManagementNumber()}"></td>
         </tr>
     </table>
 </body>

@@ -1,8 +1,8 @@
 package com.example.demo.app.domain.controller;
 
-import com.example.demo.app.domain.model.dto.ItemDto;
-import com.example.demo.app.domain.model.dto.ItemListDto;
-import com.example.demo.app.domain.model.dto.LookUpItemRequest;
+import com.example.demo.app.domain.model.dto.item.ItemDto;
+import com.example.demo.app.domain.model.dto.item.ItemListDto;
+import com.example.demo.app.domain.model.dto.item.LookUpItemRequest;
 import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.service.ItemService;
@@ -33,21 +33,27 @@ public class ItemController {
 
     // 아이템 저장
     @PostMapping("/add")
-    public String addUserEntity(
-            @RequestParam String picture,
-            @RequestParam String information,
-            @RequestParam String period,
+    public String addItem(
+            @RequestParam String caseNumber,
+            @RequestParam String court,
             @RequestParam String location,
-            @RequestParam String reserveprice,
-            @RequestParam String auctionperiod
+            @RequestParam String minimumBidPrice,
+            @RequestParam String photo,
+            @RequestParam String biddingPeriod,
+            @RequestParam String itemType,
+            @RequestParam String note,
+            @RequestParam String managementNumber
     ) {
         itemService.addItem(
-                picture,
-                information,
-                period,
+                caseNumber,
+                court,
                 location,
-                reserveprice,
-                auctionperiod
+                minimumBidPrice,
+                photo,
+                biddingPeriod,
+                itemType,
+                note,
+                managementNumber
         );
         return "redirect:/item/list";
     }
@@ -70,7 +76,7 @@ public class ItemController {
 
     @PostMapping("/show")
     public ResponseEntity<ItemDto> showItem(@RequestBody LookUpItemRequest lookUpItemRequest) {
-        return new ResponseEntity<>(itemService.lookupItem(lookUpItemRequest), getJsonHeader(), HttpStatus.OK);
+        return new ResponseEntity<>(itemService.lookUpItem(lookUpItemRequest), getJsonHeader(), HttpStatus.OK);
     }
 
     private HttpHeaders getJsonHeader() {

@@ -17,30 +17,41 @@ public class ItemEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String picture;
+    private String caseNumber;
 
     @Column(nullable = false)
-    private String information;
-
-    @Column(nullable = false)
-    private String period;
+    private String court;
 
     @Column(nullable = false)
     private String location;
 
     @Column(nullable = false)
-    private String reserveprice;
+    private String minimumBidPrice;
 
     @Column(nullable = false)
-    private String auctionperiod;
+    private String photo;
+
+    @Column(nullable = false)
+    private String biddingPeriod;
+
+    @Column(nullable = false)
+    private String itemType;
+
+    private String note;
+
+    @Column(nullable = false)
+    private String managementNumber;
 
     @Builder
-    public ItemEntity(String picture, String information, String period, String location, String reserveprice, String auctionperiod) {
-        this.picture = picture;
-        this.information = information;
-        this.period = period;
+    public ItemEntity(String caseNumber, String court, String location, String minimumBidPrice, String photo, String biddingPeriod, String itemType, String note, String managementNumber) {
+        this.caseNumber = caseNumber;
+        this.court = court;
         this.location = location;
-        this.reserveprice = reserveprice;
-        this.auctionperiod = auctionperiod;
+        this.minimumBidPrice = minimumBidPrice;
+        this.photo = photo;
+        this.biddingPeriod = biddingPeriod;
+        this.itemType = itemType;
+        this.note = note;
+        this.managementNumber = managementNumber;
     }
 }

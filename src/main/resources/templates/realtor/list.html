@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>UserId</th>
+            <th>Password</th>
+            <th>Name</th>
+            <th>ResidentNumber</th>
+            <th>PhoneNumber</th>
+            <th>Address</th>
+            <th>CorporateRegistrationNumber</th>
+            <th>FcmToken</th>
+        </tr>
+
+        <tr th:each="realtor: ${realtorInfoList}">
+            <td th:text="${realtor.getUserId()}"></td>
+            <td th:text="${realtor.getPassword()}"></td>
+            <td th:text="${realtor.getName()}"></td>
+            <td th:text="${realtor.getResidentNumber()}"></td>
+            <td th:text="${realtor.getPhoneNumber()}"></td>
+            <td th:text="${realtor.getAddress()}"></td>
+            <td th:text="${realtor.getCorporateRegistrationNumber()}"></td>
+            <td th:text="${realtor.getFcmToken()}"></td>
+        </tr>
+    </table>
+</body>
+</html>

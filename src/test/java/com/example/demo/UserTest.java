@@ -1,19 +1,31 @@
 package com.example.demo;
 
-import com.example.demo.app.domain.model.entity.UserEntity;
-import com.example.demo.app.domain.model.util.HashUtil;
 import org.junit.jupiter.api.Test;
 
-public class UserTest {
-    @Test
-    public void testPasswordHashing() {
-        String password = "mypassword";
-        UserEntity userinfo = new UserEntity();
-        userinfo.setPassword(password);
-        String hashedPassword = HashUtil.sha256(password);
+import java.util.ArrayList;
+import java.util.Arrays;
 
-        System.out.println("Original Password: " + password);
-        System.out.println("Hashed Password: " + hashedPassword);
-        System.out.println("Is hashed? " + hashedPassword.equals(userinfo.getPassword())); // should print true
+public class UserTest {
+
+    @Test
+    public void testSplit() {
+        int num = 12345;
+        ArrayList<Integer> arrNum = new ArrayList<>();
+        while(num > 0) {
+            arrNum.add(num %10);
+            num /= 10;
+        }
+        System.out.println(arrNum);
+    }
+
+    @Test
+    public void testSplit1() {
+        int num = 12345;
+        String strNum = Integer.toString(num);
+        int[] arrNum = new int[strNum.length()];
+        for (int i = 0; i < strNum.length(); i++) {
+            arrNum[i] = strNum.charAt(i) - '0';
+        }
+        System.out.print(Arrays.toString(arrNum));
     }
 }

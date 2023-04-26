@@ -1,11 +1,12 @@
 package com.example.demo.app.domain.service;
 
-import com.example.demo.app.domain.model.dto.*;
-import com.example.demo.app.domain.model.entity.ItemEntity;
-import com.example.demo.app.domain.model.entity.RepresentativeEntity;
+import com.example.demo.app.domain.model.dto.fcm.FcmRequest;
+import com.example.demo.app.domain.model.dto.fcm.FcmResponse;
+import com.example.demo.app.domain.model.dto.user.*;
+import com.example.demo.app.domain.model.entity.RealtorEntity;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
-import com.example.demo.app.domain.repository.RepresentativeRepository;
+import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,40 +21,46 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final RepresentativeRepository representativeRepository;
+    private final RealtorRepository realtorRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
     private final ItemRepository itemRepository;
 
     @Transactional
-    public void addUserinfo(
+    public void addUserInfo(
             String userid,
             String password,
-            String residentid,
-            String phonenum,
+            String name,
+            String residentId,
+            String phoneNum,
             String address,
+            String corporateRegistrationNumber,
             String fcmToken
     ) {
         UserEntity userinfo = UserEntity.builder()
-                .userid(userid)
+                .userId(userid)
                 .password(password)
-                .residentid(residentid)
-                .phonenum(phonenum)
+                .residentNumber(residentId)
+                .name(name)
+                .phoneNumber(phoneNum)
                 .address(address)
+                .corporateRegistrationNumber(corporateRegistrationNumber)
                 .fcmToken(fcmToken)
                 .build();
         userRepository.save(userinfo);
     }
 
-    public UserListDto findUserinfo() {
+    public UserListDto findUserInfo() {
         List<UserEntity> listUserinfo = userRepository.findAll();
 
         List<UserDto> listUserDto = listUserinfo.stream()
                 .map(m -> new UserDto(
-                        m.getUserid(),
+                        m.getUserId(),
                         m.getPassword(),
+                        m.getName(),
+                        m.getResidentNumber(),
+                        m.getPhoneNumber(),
                         m.getAddress(),
-                        m.getPhonenum(),
-                        m.getResidentid(),
+                        m.getCorporateRegistrationNumber(),
                         m.getFcmToken()
                 ))
                 .collect(Collectors.toList());
@@ -64,11 +71,11 @@ public class UserService {
     }
 
     @Transactional
-    public RegisterDataResponse registerUserinfo(RegisterDataRequest registerDataRequest) {
-        System.out.println(registerDataRequest.getUserid());
+    public RegisterDataResponse registerUserInfo(RegisterDataRequest registerDataRequest) {
+        System.out.println(registerDataRequest.getUserId());
 
         Optional<UserEntity> isUserExists =
-                userRepository.findByUserid(registerDataRequest.getUserid());
+                userRepository.findByUserId(registerDataRequest.getUserId());
 
         if (isUserExists.isPresent()) {
             return RegisterDataResponse.builder()
@@ -85,9 +92,9 @@ public class UserService {
                 .build();
     }
 
-    public SignupCheckResponse checkDuplicateUserinfo(SignupCheckRequest signupCheckRequest) {
+    public SignupCheckResponse checkDuplicateUserInfo(SignupCheckRequest signupCheckRequest) {
         Optional<UserEntity> isUserExists =
-                userRepository.findByUserid(signupCheckRequest.getUserid());
+                userRepository.findByUserId(signupCheckRequest.getUserId());
 
         if (isUserExists.isPresent()) {
             return SignupCheckResponse.builder()
@@ -105,7 +112,7 @@ public class UserService {
     @Transactional
     public SignInResponse loginUser(SignInRequest signInRequest) {
         Optional<UserEntity> isUserExists =
-                userRepository.findByUserid(signInRequest.getUserid());
+                userRepository.findByUserId(signInRequest.getUserId());
 
         if (isUserExists.isEmpty()) {
             return SignInResponse.builder()
@@ -124,13 +131,15 @@ public class UserService {
 
         if (signInRequest.getFcmToken() != null) {
             userRepository.save(
-                    UserEntity.builder()
+                    UserEntity.login()
                             .id(isUserExists.get().getId())
-                            .userid(isUserExists.get().getUserid())
+                            .userId(isUserExists.get().getUserId())
                             .password(isUserExists.get().getPassword())
-                            .residentid(isUserExists.get().getResidentid())
-                            .phonenum(isUserExists.get().getPhonenum())
+                            .name(isUserExists.get().getName())
+                            .residentNumber(isUserExists.get().getResidentNumber())
+                            .phoneNumber(isUserExists.get().getPhoneNumber())
                             .address(isUserExists.get().getAddress())
+                            .corporateRegistrationNumber(isUserExists.get().getCorporateRegistrationNumber())
                             .fcmToken(signInRequest.getFcmToken())
                             .build()
             );
@@ -143,15 +152,15 @@ public class UserService {
     }
 
     public FcmResponse sendByToken(FcmRequest fcmRequest) {
-        RepresentativeEntity isRepresentativeExists = representativeRepository.findByUsername(fcmRequest.getTargetId())
+        RealtorEntity isRealtorExists = realtorRepository.findByUserId(fcmRequest.getTargetId())
                 .orElseThrow(() -> new IllegalArgumentException("representative doesn't exist"));
 
-        itemRepository.findByPicture(fcmRequest.getItemImage())
+        itemRepository.findByPhoto(fcmRequest.getItemImage())
                 .orElseThrow(() -> new IllegalArgumentException("item doesn't exist"));
 
         try {
             firebaseCloudMessageService.sendMessageTo(
-                    isRepresentativeExists.getFcmToken(),
+                    isRealtorExists.getFcmToken(),
                     fcmRequest.getTitle(),
                     fcmRequest.getBody(),
                     fcmRequest.getUserId(),

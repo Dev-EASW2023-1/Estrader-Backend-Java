@@ -1,6 +1,8 @@
 package com.example.demo.app.domain.controller;
 
-import com.example.demo.app.domain.model.dto.*;
+import com.example.demo.app.domain.model.dto.fcm.FcmRequest;
+import com.example.demo.app.domain.model.dto.fcm.FcmResponse;
+import com.example.demo.app.domain.model.dto.user.*;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.UserRepository;
 import com.example.demo.app.domain.service.UserService;
@@ -25,15 +27,17 @@ public class UserController {
 
     // 유저 저장
     @PostMapping("/add")
-    public String addUserinfo(
+    public String addUserInfo(
             @RequestParam String userid,
             @RequestParam String password,
-            @RequestParam String residentid,
-            @RequestParam String phonenum,
+            @RequestParam String name,
+            @RequestParam String residentId,
+            @RequestParam String phoneNum,
             @RequestParam String address,
+            @RequestParam String corporateRegistrationNumber,
             @RequestParam String fcmToken
     ) {
-        UserService.addUserinfo(userid,password, residentid, phonenum, address, fcmToken);
+        UserService.addUserInfo(userid, password, name, residentId, phoneNum, address, corporateRegistrationNumber, fcmToken);
 
         return "redirect:/user/list";
     }
@@ -52,17 +56,17 @@ public class UserController {
     @GetMapping("/show-list")
     public ResponseEntity<UserListDto> showMember() {
         return new ResponseEntity<>(
-                UserService.findUserinfo(),
+                UserService.findUserInfo(),
                 getJsonHeader(),
                 HttpStatus.OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterDataResponse> postMember(
+    public ResponseEntity<RegisterDataResponse> registerMember(
             @RequestBody RegisterDataRequest registerDataRequest
     ) {
         return new ResponseEntity<>(
-                UserService.registerUserinfo(registerDataRequest),
+                UserService.registerUserInfo(registerDataRequest),
                 getJsonHeader(),
                 HttpStatus.OK);
     }
@@ -72,7 +76,7 @@ public class UserController {
             @RequestBody SignupCheckRequest signupCheckRequest
     ) {
         return new ResponseEntity<>(
-                UserService.checkDuplicateUserinfo(signupCheckRequest),
+                UserService.checkDuplicateUserInfo(signupCheckRequest),
                 getJsonHeader(),
                 HttpStatus.OK);
     }

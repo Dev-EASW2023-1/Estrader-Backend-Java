@@ -20,7 +20,7 @@ public class ContractEntity {
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    private RepresentativeEntity representative;
+    private RealtorEntity realtor;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private ItemEntity item;
@@ -28,11 +28,11 @@ public class ContractEntity {
     @Builder
     public ContractEntity(
             UserEntity user,
-            RepresentativeEntity representative,
+            RealtorEntity realtor,
             ItemEntity item
     ) {
         this.user = user;
-        this.representative = representative;
+        this.realtor = realtor;
         this.item = item;
     }
 }
