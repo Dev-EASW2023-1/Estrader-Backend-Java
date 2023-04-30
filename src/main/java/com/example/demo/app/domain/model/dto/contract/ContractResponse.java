@@ -15,9 +15,13 @@ public class ContractResponse {
     @NotBlank
     private String message;
 
+    @NotBlank
+    private String name;
+
     @Builder
-    public ContractResponse(Boolean isSuccess, String message) {
+    public ContractResponse(Boolean isSuccess, String message, String name) {
         this.isSuccess = isSuccess;
         this.message = message;
+        this.name = name;
     }
 }

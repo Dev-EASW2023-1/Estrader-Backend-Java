@@ -53,6 +53,7 @@ public class ContractService {
             return ContractResponse.builder()
                     .isSuccess(false)
                     .message("계약에 실패하였습니다.")
+                    .name("")
                     .build();
         }
 
@@ -71,6 +72,7 @@ public class ContractService {
             return ContractResponse.builder()
                     .isSuccess(false)
                     .message("계약에 실패하였습니다.")
+                    .name("")
                     .build();
         }
 
@@ -78,6 +80,7 @@ public class ContractService {
             return ContractResponse.builder()
                     .isSuccess(false)
                     .message("이미 계약이 존재합니다.")
+                    .name(isRealtorExists.get().getName())
                     .build();
         }
 
@@ -92,6 +95,7 @@ public class ContractService {
         return ContractResponse.builder()
                 .isSuccess(true)
                 .message("계약에 성공하였습니다.")
+                .name(isRealtorExists.get().getName())
                 .build();
     }
 
