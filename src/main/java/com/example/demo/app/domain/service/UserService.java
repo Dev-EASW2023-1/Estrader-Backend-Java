@@ -9,6 +9,7 @@ import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RealtorRepository realtorRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
@@ -38,7 +40,7 @@ public class UserService {
     ) {
         UserEntity userinfo = UserEntity.builder()
                 .userId(userid)
-                .password(password)
+                .password(passwordEncoder.encode(password)) // password should be encoded
                 .residentNumber(residentId)
                 .name(name)
                 .phoneNumber(phoneNum)
@@ -84,7 +86,20 @@ public class UserService {
                     .build();
         }
 
-        userRepository.save(registerDataRequest.toEntity());
+        String encodedPassword = passwordEncoder.encode(registerDataRequest.getPassword());
+
+        UserEntity userEntity = UserEntity.builder()
+                .userId(registerDataRequest.getUserId())
+                .password(encodedPassword)
+                .name(registerDataRequest.getName())
+                .residentNumber(registerDataRequest.getResidentNumber())
+                .phoneNumber(registerDataRequest.getPhoneNumber())
+                .address(registerDataRequest.getAddress())
+                .corporateRegistrationNumber(registerDataRequest.getCorporateRegistrationNumber())
+                .fcmToken(registerDataRequest.getFcmToken())
+                .build();
+
+        userRepository.save(userEntity);
 
         return RegisterDataResponse.builder()
                 .isSuccess(true)
@@ -121,8 +136,7 @@ public class UserService {
                     .build();
         }
 
-        if (!isUserExists.get().getPassword()
-                .equals(signInRequest.getPassword())) {
+        if (!passwordEncoder.matches(signInRequest.getPassword(), isUserExists.get().getPassword())) {
             return SignInResponse.builder()
                     .isSuccess(false)
                     .message("비밀번호가 다릅니다.")

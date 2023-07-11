@@ -1,6 +1,5 @@
 package com.example.demo.app.domain.model.entity;
 
-import com.example.demo.app.domain.model.util.HashUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,7 +51,7 @@ public class UserEntity {
             String fcmToken
     ){
         this.userId = userId;
-        this.password = HashUtil.sha256(password);
+        this.password = password;
         this.name = name;
         this.residentNumber = residentNumber;
         this.phoneNumber = phoneNumber;
