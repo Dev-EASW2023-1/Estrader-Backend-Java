@@ -34,8 +34,11 @@ public class RegisterDataRequest {
     @NotBlank
     private String fcmToken;
 
+    @NotBlank
+    private String region;
+
     @Builder
-    public RegisterDataRequest(String userId, String password, String name, String residentNumber, String phoneNumber, String address, String corporateRegistrationNumber, String fcmToken) {
+    public RegisterDataRequest(String userId, String password, String name, String residentNumber, String phoneNumber, String address, String corporateRegistrationNumber, String fcmToken, String region) {
         this.userId = userId;
         this.password = password;
         this.name = name;
@@ -44,6 +47,7 @@ public class RegisterDataRequest {
         this.address = address;
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.fcmToken = fcmToken;
+        this.region = region;
     }
 
     public UserEntity toEntity() {
@@ -56,6 +60,7 @@ public class RegisterDataRequest {
                 .address(address)
                 .corporateRegistrationNumber(corporateRegistrationNumber)
                 .fcmToken(fcmToken)
+                .region(region)
                 .build();
     }
 }

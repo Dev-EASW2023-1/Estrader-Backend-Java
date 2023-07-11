@@ -36,7 +36,8 @@ public class UserService {
             String phoneNum,
             String address,
             String corporateRegistrationNumber,
-            String fcmToken
+            String fcmToken,
+            String region
     ) {
         UserEntity userinfo = UserEntity.builder()
                 .userId(userid)
@@ -47,6 +48,7 @@ public class UserService {
                 .address(address)
                 .corporateRegistrationNumber(corporateRegistrationNumber)
                 .fcmToken(fcmToken)
+                .region(region)
                 .build();
         userRepository.save(userinfo);
     }
@@ -63,7 +65,8 @@ public class UserService {
                         m.getPhoneNumber(),
                         m.getAddress(),
                         m.getCorporateRegistrationNumber(),
-                        m.getFcmToken()
+                        m.getFcmToken(),
+                        m.getRegion()
                 ))
                 .collect(Collectors.toList());
 
@@ -86,6 +89,7 @@ public class UserService {
                     .build();
         }
 
+        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(registerDataRequest.getPassword());
 
         UserEntity userEntity = UserEntity.builder()
@@ -97,6 +101,7 @@ public class UserService {
                 .address(registerDataRequest.getAddress())
                 .corporateRegistrationNumber(registerDataRequest.getCorporateRegistrationNumber())
                 .fcmToken(registerDataRequest.getFcmToken())
+                .region(registerDataRequest.getRegion())
                 .build();
 
         userRepository.save(userEntity);
@@ -136,25 +141,30 @@ public class UserService {
                     .build();
         }
 
-        if (!passwordEncoder.matches(signInRequest.getPassword(), isUserExists.get().getPassword())) {
+        if (!passwordEncoder.matches(signInRequest.getPassword(),
+                isUserExists.get().getPassword())) {
             return SignInResponse.builder()
                     .isSuccess(false)
                     .message("비밀번호가 다릅니다.")
                     .build();
         }
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(signInRequest.getPassword());
+
         if (signInRequest.getFcmToken() != null) {
             userRepository.save(
                     UserEntity.login()
                             .id(isUserExists.get().getId())
                             .userId(isUserExists.get().getUserId())
-                            .password(isUserExists.get().getPassword())
+                            .password(encodedPassword)
                             .name(isUserExists.get().getName())
                             .residentNumber(isUserExists.get().getResidentNumber())
                             .phoneNumber(isUserExists.get().getPhoneNumber())
                             .address(isUserExists.get().getAddress())
                             .corporateRegistrationNumber(isUserExists.get().getCorporateRegistrationNumber())
                             .fcmToken(signInRequest.getFcmToken())
+                            .region(isUserExists.get().getRegion())
                             .build()
             );
         }

@@ -41,7 +41,8 @@ public class RealtorController {
             @RequestParam String phoneNumber,
             @RequestParam String address,
             @RequestParam String corporateRegistrationNumber,
-            @RequestParam String fcmToken
+            @RequestParam String fcmToken,
+            @RequestParam String region
     ) {
         realtorService.addRealtorInfo(
                 realtorId,
@@ -51,7 +52,8 @@ public class RealtorController {
                 phoneNumber,
                 address,
                 corporateRegistrationNumber,
-                fcmToken
+                fcmToken,
+                region
         );
 
         return "redirect:/realtor/list";

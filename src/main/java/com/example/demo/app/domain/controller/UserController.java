@@ -35,9 +35,10 @@ public class UserController {
             @RequestParam String phoneNum,
             @RequestParam String address,
             @RequestParam String corporateRegistrationNumber,
-            @RequestParam String fcmToken
+            @RequestParam String fcmToken,
+            @RequestParam String region
     ) {
-        UserService.addUserInfo(userid, password, name, residentId, phoneNum, address, corporateRegistrationNumber, fcmToken);
+        UserService.addUserInfo(userid, password, name, residentId, phoneNum, address, corporateRegistrationNumber, fcmToken, region);
 
         return "redirect:/user/list";
     }

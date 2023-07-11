@@ -33,6 +33,9 @@ public class RealtorDto {
     @NotBlank
     private String fcmToken;
 
+    @NotBlank
+    private String region;
+
     @Builder
     public RealtorDto(
             String realtorId,
@@ -42,7 +45,8 @@ public class RealtorDto {
             String phoneNumber,
             String address,
             String corporateRegistrationNumber,
-            String fcmToken
+            String fcmToken,
+            String region
     ) {
         this.realtorId = realtorId;
         this.password = password;
@@ -52,5 +56,6 @@ public class RealtorDto {
         this.address = address;
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.fcmToken = fcmToken;
+        this.region = region;
     }
 }

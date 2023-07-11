@@ -34,6 +34,9 @@ public class UserDto {
     @NotBlank
     private String fcmToken;
 
+    @NotBlank
+    private String region;
+
     @Builder
     public UserDto(
             String userId,
@@ -43,7 +46,8 @@ public class UserDto {
             String phoneNumber,
             String address,
             String corporateRegistrationNumber,
-            String fcmToken
+            String fcmToken,
+            String region
     ) {
         this.userId = userId;
         this.password = password;
@@ -53,17 +57,20 @@ public class UserDto {
         this.address = address;
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.fcmToken = fcmToken;
+        this.region = region;
     }
 
     public UserEntity toEntity() {
         return UserEntity.builder()
                 .userId(userId)
                 .password(password)
+                .name(name)
                 .residentNumber(residentNumber)
                 .phoneNumber(phoneNumber)
                 .address(address)
                 .corporateRegistrationNumber(corporateRegistrationNumber)
                 .fcmToken(fcmToken)
+                .region(region)
                 .build();
     }
 }

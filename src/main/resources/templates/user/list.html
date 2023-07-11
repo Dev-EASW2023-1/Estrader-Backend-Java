@@ -15,6 +15,7 @@
             <th>Address</th>
             <th>CorporateRegistrationNumber</th>
             <th>FcmToken</th>
+            <th>Region</th>
         </tr>
 
         <tr th:each="user: ${userinfoList}">
@@ -26,6 +27,7 @@
             <td th:text="${user.getAddress()}"></td>
             <td th:text="${user.getCorporateRegistrationNumber()}"></td>
             <td th:text="${user.getFcmToken()}"></td>
+            <td th:text="${user.getRegion()}"></td>
         </tr>
     </table>
 </body>

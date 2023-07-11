@@ -15,6 +15,7 @@
             <th>Address</th>
             <th>CorporateRegistrationNumber</th>
             <th>FcmToken</th>
+            <th>Region</th>
         </tr>
 
         <tr th:each="realtor: ${realtorInfoList}">
@@ -26,6 +27,7 @@
             <td th:text="${realtor.getAddress()}"></td>
             <td th:text="${realtor.getCorporateRegistrationNumber()}"></td>
             <td th:text="${realtor.getFcmToken()}"></td>
+            <td th:text="${realtor.getRegion()}"></td>
         </tr>
     </table>
 </body>

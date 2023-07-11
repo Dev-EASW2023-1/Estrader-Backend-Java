@@ -12,6 +12,7 @@ import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RealtorService {
+
+    private final PasswordEncoder passwordEncoder;
     private final RealtorRepository realtorRepository;
     private final UserRepository userRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
@@ -37,17 +40,19 @@ public class RealtorService {
             String phoneNumber,
             String address,
             String corporateRegistrationNumber,
-            String fcmToken
+            String fcmToken,
+            String region
     ) {
         RealtorEntity representativeInfo = RealtorEntity.builder()
                 .realtorId(realtorId)
-                .password(password)
+                .password(passwordEncoder.encode(password)) // password should be encoded
                 .name(name)
                 .residentNumber(residentNumber)
                 .phoneNumber(phoneNumber)
                 .address(address)
                 .corporateRegistrationNumber(corporateRegistrationNumber)
                 .fcmToken(fcmToken)
+                .region(region)
                 .build();
         realtorRepository.save(representativeInfo);
     }
@@ -64,7 +69,8 @@ public class RealtorService {
                         m.getPhoneNumber(),
                         m.getAddress(),
                         m.getCorporateRegistrationNumber(),
-                        m.getFcmToken()
+                        m.getFcmToken(),
+                        m.getRegion()
                 ))
                 .collect(Collectors.toList());
 
@@ -85,8 +91,8 @@ public class RealtorService {
                     .build();
         }
 
-        if (!isRealtorExists.get().getPassword()
-                .equals(realtorSignInRequest.getPassword())) {
+        if (!passwordEncoder.matches(realtorSignInRequest.getPassword(),
+                isRealtorExists.get().getPassword())) {
 
             System.out.println("DB 비밀번호는?" + isRealtorExists.get().getPassword());
             System.out.println("로그인 비밀번호는?" + realtorSignInRequest.getPassword());
@@ -97,18 +103,22 @@ public class RealtorService {
                     .build();
         }
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(realtorSignInRequest.getPassword());
+
         if (realtorSignInRequest.getFcmToken() != null) {
             realtorRepository.save(
                     RealtorEntity.login()
                             .id(isRealtorExists.get().getId())
                             .realtorId(isRealtorExists.get().getRealtorId())
-                            .password(isRealtorExists.get().getPassword())
+                            .password(encodedPassword)
                             .name(isRealtorExists.get().getName())
                             .residentNumber(isRealtorExists.get().getResidentNumber())
                             .phoneNumber(isRealtorExists.get().getPhoneNumber())
                             .address(isRealtorExists.get().getAddress())
                             .corporateRegistrationNumber(isRealtorExists.get().getCorporateRegistrationNumber())
                             .fcmToken(realtorSignInRequest.getFcmToken())
+                            .region(isRealtorExists.get().getRegion())
                             .build()
             );
         }
