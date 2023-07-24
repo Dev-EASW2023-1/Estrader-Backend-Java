@@ -1,15 +1,14 @@
 package com.example.demo.app.domain.controller;
 
-import com.example.demo.app.domain.model.dto.fcm.FcmRequest;
-import com.example.demo.app.domain.model.dto.fcm.FcmResponse;
 import com.example.demo.app.domain.model.dto.Realtor.RealtorSignInRequest;
 import com.example.demo.app.domain.model.dto.Realtor.RealtorSignInResponse;
+import com.example.demo.app.domain.model.dto.fcm.FcmRequest;
+import com.example.demo.app.domain.model.dto.fcm.FcmResponse;
 import com.example.demo.app.domain.model.entity.RealtorEntity;
 import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.service.RealtorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -73,20 +72,18 @@ public class RealtorController {
     public ResponseEntity<RealtorSignInResponse> loginMember(
             @RequestBody RealtorSignInRequest realtorSignInRequest
     ) {
-        return new ResponseEntity<>(
-                realtorService.loginRealtor(realtorSignInRequest),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(realtorService.loginRealtor(realtorSignInRequest));
     }
 
     @PostMapping("/fcm")
     public ResponseEntity<FcmResponse> pushMember(
             @RequestBody FcmRequest fcmRequest
     ) {
-        return new ResponseEntity<>(
-                realtorService.sendByToken(fcmRequest),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(realtorService.sendByToken(fcmRequest));
     }
 
     private HttpHeaders getJsonHeader() {

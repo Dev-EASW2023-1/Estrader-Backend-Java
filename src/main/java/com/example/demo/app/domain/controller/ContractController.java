@@ -6,7 +6,6 @@ import com.example.demo.app.domain.model.dto.item.ItemListDto;
 import com.example.demo.app.domain.service.ContractService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,22 +24,19 @@ public class ContractController {
     public ResponseEntity<ContractResponse> pushMember(
             @RequestBody ContractRequest contractRequest
     ) {
-        return new ResponseEntity<>(
-                contractService.registerContract(contractRequest),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(contractService.registerContract(contractRequest));
     }
 
     @PostMapping("/item")
     public ResponseEntity<ItemDto> findItem(
             @RequestBody ItemInContractDto itemInContractDto
     ) {
-        return new ResponseEntity<>(
-                contractService.findItemByContract(itemInContractDto),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(contractService.findItemByContract(itemInContractDto));
     }
-
 
     // 테스트용 API (Contract 테이블 JPQL @Query 사용)
     @GetMapping("/test1/{userId}/{realtorId}/{itemId}")
@@ -49,10 +45,9 @@ public class ContractController {
             @PathVariable("realtorId") String realtorId,
             @PathVariable("itemId") String itemId
     ) {
-        return new ResponseEntity<>(
-                contractService.ContractTest1(userId, realtorId, itemId),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(contractService.ContractTest1(userId, realtorId, itemId));
     }
 
     // 테스트용 API (Contract 테이블 쿼리 메소드 사용)
@@ -62,19 +57,18 @@ public class ContractController {
             @PathVariable("realtorId") String realtorId,
             @PathVariable("itemId") String itemId
     ) {
-        return new ResponseEntity<>(
-                contractService.ContractTest2(userId, realtorId, itemId),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(contractService.ContractTest2(userId, realtorId, itemId));
     }
+
     @PostMapping("/find-info")
     public ResponseEntity<ContractInfoResponse> findItemForPDF(
             @RequestBody ContractInfoRequest contractInfoRequest
     ){
-        return new ResponseEntity<>(
-                contractService.findContractInfo(contractInfoRequest),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(contractService.findContractInfo(contractInfoRequest));
     }
 
     private HttpHeaders getJsonHeader() {

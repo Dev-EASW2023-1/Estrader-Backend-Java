@@ -8,7 +8,6 @@ import com.example.demo.app.domain.repository.UserRepository;
 import com.example.demo.app.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -56,50 +55,45 @@ public class UserController {
 
     @GetMapping("/show-list")
     public ResponseEntity<UserListDto> showMember() {
-        return new ResponseEntity<>(
-                UserService.findUserInfo(),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(UserService.findUserInfo());
     }
 
     @PostMapping("/register")
     public ResponseEntity<RegisterDataResponse> registerMember(
             @RequestBody RegisterDataRequest registerDataRequest
     ) {
-        return new ResponseEntity<>(
-                UserService.registerUserInfo(registerDataRequest),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(UserService.registerUserInfo(registerDataRequest));
     }
 
     @PostMapping("/account-exists")
     public ResponseEntity<SignupCheckResponse> checkMember(
             @RequestBody SignupCheckRequest signupCheckRequest
     ) {
-        return new ResponseEntity<>(
-                UserService.checkDuplicateUserInfo(signupCheckRequest),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(UserService.checkDuplicateUserInfo(signupCheckRequest));
     }
 
     @PatchMapping("/login")
     public ResponseEntity<SignInResponse> loginMember(
             @RequestBody SignInRequest signInRequest
     ) {
-        return new ResponseEntity<>(
-                UserService.loginUser(signInRequest),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(UserService.loginUser(signInRequest));
     }
 
     @PostMapping("/fcm")
     public ResponseEntity<FcmResponse> pushMember(
             @RequestBody FcmRequest fcmRequest
     ) {
-        return new ResponseEntity<>(
-                UserService.sendByToken(fcmRequest),
-                getJsonHeader(),
-                HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(UserService.sendByToken(fcmRequest));
     }
 
     private HttpHeaders getJsonHeader() {

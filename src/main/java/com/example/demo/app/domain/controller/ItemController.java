@@ -8,7 +8,6 @@ import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -71,12 +70,16 @@ public class ItemController {
 
     @GetMapping("/show-list")
     public ResponseEntity<ItemListDto> showItemList() {
-        return new ResponseEntity<>(itemService.findItemList(), getJsonHeader(), HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(itemService.findItemList());
     }
 
     @PostMapping("/show")
     public ResponseEntity<ItemDto> showItem(@RequestBody LookUpItemRequest lookUpItemRequest) {
-        return new ResponseEntity<>(itemService.lookUpItem(lookUpItemRequest), getJsonHeader(), HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(getJsonHeader())
+                .body(itemService.lookUpItem(lookUpItemRequest));
     }
 
     private HttpHeaders getJsonHeader() {
