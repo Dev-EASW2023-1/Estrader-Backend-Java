@@ -94,18 +94,20 @@ public class RealtorEntity {
         this.region = region;
     }
 
-    public static RealtorEntity toEntity(RealtorEntity realtor, String password) {
-        return RealtorEntity.login()
-                .id(realtor.getId())
-                .realtorId(realtor.getRealtorId())
-                .password(password)
-                .name(realtor.getName())
-                .residentNumber(realtor.getResidentNumber())
-                .phoneNumber(realtor.getPhoneNumber())
-                .address(realtor.getAddress())
-                .corporateRegistrationNumber(realtor.getCorporateRegistrationNumber())
-                .fcmToken(realtor.getFcmToken())
-                .region(realtor.getRegion())
-                .build();
+    public RealtorEntity(RealtorEntity realtor, String fcmToken) {
+        this.id = realtor.getId();
+        this.realtorId = realtor.getRealtorId();
+        this.password = realtor.getPassword();
+        this.name = realtor.getName();
+        this.residentNumber = realtor.getResidentNumber();
+        this.phoneNumber = realtor.getPhoneNumber();
+        this.address = realtor.getAddress();
+        this.corporateRegistrationNumber = realtor.getCorporateRegistrationNumber();
+        this.fcmToken = fcmToken;
+        this.region = realtor.getRegion();
+    }
+
+    public static RealtorEntity of(RealtorEntity realtor, String fcmToken) {
+        return new RealtorEntity(realtor, fcmToken);
     }
 }

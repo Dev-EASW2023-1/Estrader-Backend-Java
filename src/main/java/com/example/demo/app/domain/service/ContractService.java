@@ -1,6 +1,8 @@
 package com.example.demo.app.domain.service;
 
+import com.example.demo.app.domain.exception.exceptions.ContractFailureException;
 import com.example.demo.app.domain.model.dto.contract.*;
+import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import com.example.demo.app.domain.model.dto.item.ItemDto;
 import com.example.demo.app.domain.model.dto.item.ItemListDto;
 import com.example.demo.app.domain.model.entity.ContractEntity;
@@ -12,9 +14,9 @@ import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ContractService {
 
     private final UserRepository userRepository;
@@ -33,14 +36,15 @@ public class ContractService {
     @Transactional
     public ContractResponse registerContract(ContractRequest contractRequest) {
 
-        Optional<UserEntity> isUserExists =
-                userRepository.findByUserId(contractRequest.getUserId());
-
-        Optional<RealtorEntity> isRealtorExists =
-                realtorRepository.findByRealtorId(contractRequest.getRealtorId());
-
-        Optional<ItemEntity> isItemExists =
-                itemRepository.findByPhoto(contractRequest.getItemId());
+        UserEntity isUserExists =
+                userRepository.findByUserId(contractRequest.getUserId())
+                        .orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
+        RealtorEntity isRealtorExists =
+                realtorRepository.findByRealtorId(contractRequest.getRealtorId())
+                        .orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
+        ItemEntity isItemExists =
+                itemRepository.findByPhoto(contractRequest.getItemId())
+                        .orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
 
         Optional<ContractEntity> isContractExists =
                 contractRepository.findItemByThreeParams(
@@ -49,78 +53,56 @@ public class ContractService {
                         contractRequest.getItemId()
                 );
 
-        if (isUserExists.isEmpty() || isRealtorExists.isEmpty() || isItemExists.isEmpty()) {
-            return ContractResponse.builder()
-                    .isSuccess(false)
-                    .message("계약에 실패하였습니다.")
-                    .name("")
-                    .build();
-        }
+        send(isRealtorExists.getFcmToken(), contractRequest);
 
-        try {
-            firebaseCloudMessageService.sendMessageTo(
-                    isRealtorExists.get().getFcmToken(),
-                    contractRequest.getTitle(),
-                    contractRequest.getBody(),
-                    contractRequest.getUserId(),
-                    contractRequest.getRealtorId(),
-                    contractRequest.getItemId(),
-                    contractRequest.getPhase()
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ContractResponse.builder()
-                    .isSuccess(false)
-                    .message("계약에 실패하였습니다.")
-                    .name("")
-                    .build();
-        }
+        log.info("전송 성공 from (구매자) {} to (대리인) {}", contractRequest.getUserId(), contractRequest.getRealtorId());
 
         if (isContractExists.isPresent()) {
             return ContractResponse.builder()
-                    .isSuccess(false)
+                    .isSuccess(true)
                     .message("이미 계약이 존재합니다.")
-                    .name(isRealtorExists.get().getName())
+                    .name(isRealtorExists.getName())
                     .build();
         }
 
         contractRepository.save(
                 ContractEntity.builder()
-                        .user(isUserExists.get())
-                        .item(isItemExists.get())
-                        .realtor(isRealtorExists.get())
+                        .user(isUserExists)
+                        .item(isItemExists)
+                        .realtor(isRealtorExists)
                         .build()
         );
+
+        log.info("계약 성공");
 
         return ContractResponse.builder()
                 .isSuccess(true)
                 .message("계약에 성공하였습니다.")
-                .name(isRealtorExists.get().getName())
+                .name(isRealtorExists.getName())
                 .build();
     }
 
+    private void send(String targetToken, ContractRequest contractRequest) {
+        try {
+            firebaseCloudMessageService.sendMessageTo(
+                    targetToken,
+                    contractRequest
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.info("전송 실패");
+            throw new ContractFailureException(ErrorCode.CONTRACT_FAILURE);
+        }
+    }
+
     public ItemDto findItemByContract(ItemInContractDto itemInContractDto) {
-        Optional<ContractEntity> contract = contractRepository.findItemByThreeParams(
+        ContractEntity contract = contractRepository.findItemByThreeParams(
                 itemInContractDto.getUserId(),
                 itemInContractDto.getRealtorId(),
                 itemInContractDto.getItemId()
-        );
+        ).orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
 
-        if(contract.isEmpty()){
-            throw new IllegalArgumentException();
-        }
-
-        return ItemDto.builder()
-                .caseNumber(contract.get().getItem().getCaseNumber())
-                .court(contract.get().getItem().getCourt())
-                .location(contract.get().getItem().getLocation())
-                .minimumBidPrice(contract.get().getItem().getMinimumBidPrice())
-                .photo(contract.get().getItem().getPhoto())
-                .biddingPeriod(contract.get().getItem().getBiddingPeriod())
-                .itemType(contract.get().getItem().getItemType())
-                .note(contract.get().getItem().getNote())
-                .managementNumber(contract.get().getItem().getManagementNumber())
-                .build();
+        return ItemDto.of(contract.getItem());
     }
 
     // Contract 테이블 JPQL @Query 사용, Fetch Join 으로 N+1 문제 방지
@@ -132,17 +114,7 @@ public class ContractService {
         );
 
         List<ItemDto> listItemDto = listContract.stream()
-                .map(m -> new ItemDto(
-                        m.getItem().getCaseNumber(),
-                        m.getItem().getCourt(),
-                        m.getItem().getLocation(),
-                        m.getItem().getMinimumBidPrice(),
-                        m.getItem().getPhoto(),
-                        m.getItem().getBiddingPeriod(),
-                        m.getItem().getItemType(),
-                        m.getItem().getNote(),
-                        m.getItem().getManagementNumber()
-                ))
+                .map(m -> ItemDto.of(m.getItem()))
                 .collect(Collectors.toList());
 
         return ItemListDto.builder()
@@ -152,47 +124,22 @@ public class ContractService {
 
     // Contract 테이블 쿼리 메소드 사용
     public ItemDto ContractTest2(String userId, String realtorId, String caseNumber) {
-        Optional<ContractEntity> test = contractRepository.findAllByItem_CaseNumberAndRealtor_RealtorIdAndUser_UserId(
+        ContractEntity test = contractRepository.findAllByItem_CaseNumberAndRealtor_RealtorIdAndUser_UserId(
                 caseNumber,
                 realtorId,
                 userId
-        );
+        ).orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
 
-        if (test.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
-        return ItemDto.builder()
-                .caseNumber(test.get().getItem().getCaseNumber())
-                .court(test.get().getItem().getCourt())
-                .location(test.get().getItem().getLocation())
-                .minimumBidPrice(test.get().getItem().getMinimumBidPrice())
-                .photo(test.get().getItem().getPhoto())
-                .biddingPeriod(test.get().getItem().getBiddingPeriod())
-                .itemType(test.get().getItem().getItemType())
-                .note(test.get().getItem().getNote())
-                .managementNumber(test.get().getItem().getManagementNumber())
-                .build();
+        return ItemDto.of(test.getItem());
     }
 
     public ContractInfoResponse findContractInfo(ContractInfoRequest contractInfoRequest){
-        Optional<ContractEntity> contract = contractRepository.findItemByThreeParams(
+        ContractEntity contract = contractRepository.findItemByThreeParams(
                 contractInfoRequest.getUserId(),
                 contractInfoRequest.getRealtorId(),
                 contractInfoRequest.getItemId()
-        );
+        ).orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
 
-        System.out.println("아이디는 잘 온 건가요? " + contractInfoRequest.getUserId());
-
-        if(contract.isEmpty()){
-            throw new IllegalArgumentException();
-        }
-
-        return ContractInfoResponse.builder()
-                .caseNumber(contract.get().getItem().getCaseNumber())
-                .biddingPeriod(contract.get().getItem().getBiddingPeriod())
-                .minimumBidPrice(contract.get().getItem().getMinimumBidPrice())
-                .managementNumber(contract.get().getItem().getManagementNumber())
-                .build();
+        return ContractInfoResponse.of(contract.getItem());
     }
 }

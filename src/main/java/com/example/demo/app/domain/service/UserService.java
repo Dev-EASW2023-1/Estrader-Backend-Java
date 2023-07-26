@@ -1,5 +1,7 @@
 package com.example.demo.app.domain.service;
 
+import com.example.demo.app.domain.exception.exceptions.*;
+import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import com.example.demo.app.domain.model.dto.fcm.FcmRequest;
 import com.example.demo.app.domain.model.dto.fcm.FcmResponse;
 import com.example.demo.app.domain.model.dto.user.*;
@@ -9,10 +11,10 @@ import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -83,28 +86,19 @@ public class UserService {
                 userRepository.findByUserId(registerDataRequest.getUserId());
 
         if (isUserExists.isPresent()) {
-            return RegisterDataResponse.builder()
-                    .isSuccess(false)
-                    .message("회원가입에 실패하였습니다.")
-                    .build();
+            log.info("회원가입 실패");
+            throw new SignupFailureException(ErrorCode.SIGNUP_FAILURE);
         }
 
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(registerDataRequest.getPassword());
 
-        UserEntity userEntity = UserEntity.builder()
-                .userId(registerDataRequest.getUserId())
-                .password(encodedPassword)
-                .name(registerDataRequest.getName())
-                .residentNumber(registerDataRequest.getResidentNumber())
-                .phoneNumber(registerDataRequest.getPhoneNumber())
-                .address(registerDataRequest.getAddress())
-                .corporateRegistrationNumber(registerDataRequest.getCorporateRegistrationNumber())
-                .fcmToken(registerDataRequest.getFcmToken())
-                .region(registerDataRequest.getRegion())
-                .build();
+        userRepository.save(UserEntity.of(
+                registerDataRequest,
+                encodedPassword
+        ));
 
-        userRepository.save(userEntity);
+        log.info("회원가입 성공 = {}", registerDataRequest.getUserId());
 
         return RegisterDataResponse.builder()
                 .isSuccess(true)
@@ -117,12 +111,10 @@ public class UserService {
                 userRepository.findByUserId(signupCheckRequest.getUserId());
 
         if (isUserExists.isPresent()) {
-            return SignupCheckResponse.builder()
-                    .isDuplicated(false)
-                    .message("아이디가 이미 존재합니다.")
-                    .build();
+            throw new DuplicateIdException(ErrorCode.DUPLICATE_ID);
         }
 
+        log.info("사용할 수 있는 아이디입니다. = {}", signupCheckRequest.getUserId());
         return SignupCheckResponse.builder()
                 .isDuplicated(true)
                 .message("사용할 수 있는 아이디입니다.")
@@ -131,43 +123,23 @@ public class UserService {
 
     @Transactional
     public SignInResponse loginUser(SignInRequest signInRequest) {
-        Optional<UserEntity> isUserExists =
-                userRepository.findByUserId(signInRequest.getUserId());
-
-        if (isUserExists.isEmpty()) {
-            return SignInResponse.builder()
-                    .isSuccess(false)
-                    .message("로그인에 실패했습니다.")
-                    .build();
-        }
+        UserEntity isUserExists =
+                userRepository.findByUserId(signInRequest.getUserId())
+                        .orElseThrow(() -> new LoginFailureException(ErrorCode.LOGIN_FAILURE));
 
         if (!passwordEncoder.matches(signInRequest.getPassword(),
-                isUserExists.get().getPassword())) {
-            return SignInResponse.builder()
-                    .isSuccess(false)
-                    .message("비밀번호가 다릅니다.")
-                    .build();
+                isUserExists.getPassword())) {
+            throw new LoginFailureException(ErrorCode.PASSWORD_MISMATCH);
         }
-
-        // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(signInRequest.getPassword());
 
         if (signInRequest.getFcmToken() != null) {
-            userRepository.save(
-                    UserEntity.login()
-                            .id(isUserExists.get().getId())
-                            .userId(isUserExists.get().getUserId())
-                            .password(encodedPassword)
-                            .name(isUserExists.get().getName())
-                            .residentNumber(isUserExists.get().getResidentNumber())
-                            .phoneNumber(isUserExists.get().getPhoneNumber())
-                            .address(isUserExists.get().getAddress())
-                            .corporateRegistrationNumber(isUserExists.get().getCorporateRegistrationNumber())
-                            .fcmToken(signInRequest.getFcmToken())
-                            .region(isUserExists.get().getRegion())
-                            .build()
-            );
+            userRepository.save(UserEntity.of(
+                    isUserExists,
+                    signInRequest.getFcmToken()
+            ));
         }
+
+        log.info("로그인 성공 (구매자) = {}", signInRequest.getUserId());
 
         return SignInResponse.builder()
                 .isSuccess(true)
@@ -177,31 +149,31 @@ public class UserService {
 
     public FcmResponse sendByToken(FcmRequest fcmRequest) {
         RealtorEntity isRealtorExists = realtorRepository.findByRealtorId(fcmRequest.getTargetId())
-                .orElseThrow(() -> new IllegalArgumentException("representative doesn't exist"));
-
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
         itemRepository.findByPhoto(fcmRequest.getItemImage())
-                .orElseThrow(() -> new IllegalArgumentException("item doesn't exist"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
 
-        try {
-            firebaseCloudMessageService.sendMessageTo(
-                    isRealtorExists.getFcmToken(),
-                    fcmRequest.getTitle(),
-                    fcmRequest.getBody(),
-                    fcmRequest.getUserId(),
-                    fcmRequest.getTargetId(),
-                    fcmRequest.getItemImage(),
-                    fcmRequest.getPhase()
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-            return FcmResponse.builder()
-                    .message("전송에 실패하였습니다.")
-                    .isSuccess(false)
-                    .build();
-        }
+        send(isRealtorExists.getFcmToken(), fcmRequest);
+
+        log.info("전송 성공 from (구매자) {} to (대리인) {}", fcmRequest.getUserId(), fcmRequest.getTargetId());
+        log.info("대리인 토큰 = {}", isRealtorExists.getFcmToken());
+
         return FcmResponse.builder()
                 .message("전송에 성공하였습니다.")
                 .isSuccess(true)
                 .build();
+    }
+
+    private void send(String targetToken, FcmRequest fcmRequest) {
+        try {
+            firebaseCloudMessageService.sendMessageTo(
+                    targetToken,
+                    fcmRequest
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.info("전송 실패");
+            throw new FcmFailureException(ErrorCode.FCM_FAILURE);
+        }
     }
 }

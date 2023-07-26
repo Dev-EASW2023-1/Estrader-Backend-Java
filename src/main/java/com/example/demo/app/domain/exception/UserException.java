@@ -1,15 +1,15 @@
-package com.example.demo.app.domain.exception.exceptions;
+package com.example.demo.app.domain.exception;
 
 import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class DuplicateContractException extends RuntimeException {
+public class UserException extends RuntimeException {
     private final ErrorCode errorCode;
 
-    public DuplicateContractException(ErrorCode errorCode) {
+    public UserException(ErrorCode errorCode) {
         super(errorCode.getMessage());
-        log.trace(errorCode.getMessage());
+        log.info(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 

@@ -1,5 +1,6 @@
 package com.example.demo.app.domain.model.entity;
 
+import com.example.demo.app.domain.model.dto.user.RegisterDataRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -112,5 +113,38 @@ public class UserEntity {
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.fcmToken = fcmToken;
         this.region = region;
+    }
+
+    public UserEntity(UserEntity user, String fcmToken) {
+        this.id = user.getId();
+        this.userId = user.getUserId();
+        this.password = user.getPassword();
+        this.name = user.getName();
+        this.residentNumber = user.getResidentNumber();
+        this.phoneNumber = user.getPhoneNumber();
+        this.address = user.getAddress();
+        this.corporateRegistrationNumber = user.getCorporateRegistrationNumber();
+        this.fcmToken = fcmToken;
+        this.region = user.getRegion();
+    }
+
+    public UserEntity(RegisterDataRequest dto, String password) {
+        this.userId = dto.getUserId();
+        this.password = password;
+        this.name = dto.getName();
+        this.residentNumber = dto.getResidentNumber();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.address = dto.getAddress();
+        this.corporateRegistrationNumber = dto.getCorporateRegistrationNumber();
+        this.fcmToken = dto.getFcmToken();
+        this.region = dto.getRegion();
+    }
+
+    public static UserEntity of(UserEntity user, String fcmToken) {
+        return new UserEntity(user, fcmToken);
+    }
+
+    public static UserEntity of(RegisterDataRequest dto, String password) {
+        return new UserEntity(dto, password);
     }
 }

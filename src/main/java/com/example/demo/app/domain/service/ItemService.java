@@ -1,5 +1,7 @@
 package com.example.demo.app.domain.service;
 
+import com.example.demo.app.domain.exception.exceptions.NotFoundException;
+import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import com.example.demo.app.domain.model.dto.item.ItemDto;
 import com.example.demo.app.domain.model.dto.item.ItemListDto;
 import com.example.demo.app.domain.model.dto.item.LookUpItemRequest;
@@ -7,9 +9,7 @@ import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,17 +46,7 @@ public class ItemService {
         List<ItemEntity> listUser = itemRepository.findAll();
 
         List<ItemDto> listItemDto = listUser.stream()
-                .map(m -> new ItemDto(
-                        m.getCaseNumber(),
-                        m.getCourt(),
-                        m.getLocation(),
-                        m.getMinimumBidPrice(),
-                        m.getPhoto(),
-                        m.getBiddingPeriod(),
-                        m.getItemType(),
-                        m.getNote(),
-                        m.getManagementNumber()
-                ))
+                .map(ItemDto::of)
                 .collect(Collectors.toList());
 
         return ItemListDto.builder()
@@ -65,23 +55,10 @@ public class ItemService {
     }
 
     public ItemDto lookUpItem(LookUpItemRequest lookUpItemRequest) {
-        Optional<ItemEntity> isItemExists =
-                itemRepository.findByPhoto(lookUpItemRequest.getPhoto());
+        ItemEntity isItemExists =
+                itemRepository.findByPhoto(lookUpItemRequest.getPhoto())
+                        .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
 
-        if(isItemExists.isEmpty()){
-            throw new IllegalArgumentException();
-        }
-
-        return ItemDto.builder()
-                .caseNumber(isItemExists.get().getCaseNumber())
-                .court(isItemExists.get().getCourt())
-                .location(isItemExists.get().getLocation())
-                .minimumBidPrice(isItemExists.get().getMinimumBidPrice())
-                .photo(isItemExists.get().getPhoto())
-                .biddingPeriod(isItemExists.get().getBiddingPeriod())
-                .itemType(isItemExists.get().getItemType())
-                .note(isItemExists.get().getNote())
-                .managementNumber(isItemExists.get().getManagementNumber())
-                .build();
+        return ItemDto.of(isItemExists);
     }
 }

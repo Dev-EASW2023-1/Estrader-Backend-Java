@@ -1,6 +1,8 @@
 package com.example.demo.app.domain.service;
 
+import com.example.demo.app.domain.model.dto.contract.ContractRequest;
 import com.example.demo.app.domain.model.dto.fcm.FcmMessageDto;
+import com.example.demo.app.domain.model.dto.fcm.FcmRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -9,7 +11,6 @@ import okhttp3.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -18,7 +19,6 @@ import java.util.List;
 public class FirebaseCloudMessageService {
     private final ObjectMapper objectMapper;
 
-    // HTTP 통신을 간편하게 사용할 수 있도록 만들어진 자바 라이브러리 OkHttp
     public void sendMessageTo(
             String targetToken,
             String title,
@@ -28,7 +28,57 @@ public class FirebaseCloudMessageService {
             String itemImage,
             String phase
     ) throws IOException {
-        String message = makeMessage(targetToken, title, body, userId, targetId, itemImage, phase);
+        String message = makeMessage(
+                targetToken,
+                title,
+                body,
+                userId,
+                targetId,
+                itemImage,
+                phase
+        );
+
+        handleFcmMessageWithOkHttp(message);
+    }
+
+    public void sendMessageTo(
+            String targetToken,
+            FcmRequest fcmRequest
+    ) throws IOException {
+        String message = makeMessage(
+                targetToken,
+                fcmRequest.getTitle(),
+                fcmRequest.getBody(),
+                fcmRequest.getUserId(),
+                fcmRequest.getTargetId(),
+                fcmRequest.getItemImage(),
+                fcmRequest.getPhase()
+        );
+
+        handleFcmMessageWithOkHttp(message);
+    }
+
+    public void sendMessageTo(
+            String targetToken,
+            ContractRequest contractRequest
+    ) throws IOException {
+        String message = makeMessage(
+                targetToken,
+                contractRequest.getTitle(),
+                contractRequest.getBody(),
+                contractRequest.getUserId(),
+                contractRequest.getRealtorId(),
+                contractRequest.getItemId(),
+                contractRequest.getPhase()
+        );
+
+        handleFcmMessageWithOkHttp(message);
+    }
+
+    // HTTP 통신을 간편하게 사용할 수 있도록 만들어진 자바 라이브러리 OkHttp
+    public void handleFcmMessageWithOkHttp(
+            String message
+    ) throws IOException {
 
         // OkHttp 클라이언트 객체 생성
         OkHttpClient client = new OkHttpClient();

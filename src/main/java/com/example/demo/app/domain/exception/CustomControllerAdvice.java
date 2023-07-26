@@ -79,7 +79,7 @@ public class CustomControllerAdvice {
                 .body(SignupCheckResponse.of(errorCode));
     }
 
-    // 계약 실패, 계약 중복
+    // 계약 실패
     @ExceptionHandler(ContractFailureException.class)
     public ResponseEntity<ContractResponse> DuplicateIdHandle(
             ContractFailureException e
