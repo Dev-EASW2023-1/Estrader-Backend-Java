@@ -1,5 +1,6 @@
 package com.example.demo.app.domain.model.dto.contract;
 
+import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,15 @@ public class ContractResponse {
         this.isSuccess = isSuccess;
         this.message = message;
         this.name = name;
+    }
+
+    public ContractResponse(ErrorCode code) {
+        this.isSuccess = code.getIsSuccess();
+        this.message = code.getMessage();
+        this.name = "";
+    }
+
+    public static ContractResponse of(ErrorCode code) {
+        return new ContractResponse(code);
     }
 }

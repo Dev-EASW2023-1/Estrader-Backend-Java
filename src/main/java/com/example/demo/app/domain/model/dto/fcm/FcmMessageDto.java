@@ -1,11 +1,12 @@
 package com.example.demo.app.domain.model.dto.fcm;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FcmMessageDto {
     private Message message;
 

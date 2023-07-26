@@ -1,6 +1,7 @@
 package com.example.demo.app.domain.model.dto.item;
 
 import com.example.demo.app.domain.model.entity.ItemEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemDto {
 
     @NotBlank
@@ -50,6 +51,22 @@ public class ItemDto {
         this.itemType = itemType;
         this.note = note;
         this.managementNumber = managementNumber;
+    }
+
+    public ItemDto(ItemEntity item) {
+        this.caseNumber = item.getCaseNumber();
+        this.court = item.getCourt();
+        this.location = item.getLocation();
+        this.minimumBidPrice = item.getMinimumBidPrice();
+        this.photo = item.getPhoto();
+        this.biddingPeriod = item.getBiddingPeriod();
+        this.itemType = item.getItemType();
+        this.note = item.getNote();
+        this.managementNumber = item.getManagementNumber();
+    }
+
+    public static ItemDto of(ItemEntity item) {
+        return new ItemDto(item);
     }
 
     public ItemEntity toEntity() {

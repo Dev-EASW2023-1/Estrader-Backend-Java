@@ -1,5 +1,6 @@
 package com.example.demo.app.domain.model.dto.contract;
 
+import com.example.demo.app.domain.model.entity.ItemEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,5 +29,16 @@ public class ContractInfoResponse {
         this.caseNumber = caseNumber;
         this.minimumBidPrice = minimumBidPrice;
         this.managementNumber = managementNumber;
+    }
+
+    public ContractInfoResponse(ItemEntity item) {
+        this.caseNumber = item.getCaseNumber();
+        this.minimumBidPrice = item.getMinimumBidPrice();
+        this.biddingPeriod = item.getBiddingPeriod();
+        this.managementNumber = item.getManagementNumber();
+    }
+
+    public static ContractInfoResponse of(ItemEntity item) {
+        return new ContractInfoResponse(item);
     }
 }

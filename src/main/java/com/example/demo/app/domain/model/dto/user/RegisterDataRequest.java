@@ -1,6 +1,7 @@
 package com.example.demo.app.domain.model.dto.user;
 
 import com.example.demo.app.domain.model.entity.UserEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RegisterDataRequest {
     @NotBlank
     private String userId;

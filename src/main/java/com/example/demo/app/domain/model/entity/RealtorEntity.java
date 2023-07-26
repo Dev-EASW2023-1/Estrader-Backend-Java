@@ -93,4 +93,19 @@ public class RealtorEntity {
         this.fcmToken = fcmToken;
         this.region = region;
     }
+
+    public static RealtorEntity toEntity(RealtorEntity realtor, String password) {
+        return RealtorEntity.login()
+                .id(realtor.getId())
+                .realtorId(realtor.getRealtorId())
+                .password(password)
+                .name(realtor.getName())
+                .residentNumber(realtor.getResidentNumber())
+                .phoneNumber(realtor.getPhoneNumber())
+                .address(realtor.getAddress())
+                .corporateRegistrationNumber(realtor.getCorporateRegistrationNumber())
+                .fcmToken(realtor.getFcmToken())
+                .region(realtor.getRegion())
+                .build();
+    }
 }

@@ -1,12 +1,13 @@
 package com.example.demo.app.domain.model.dto.user;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserListDto {
     private List<UserDto> userDto;
 
