@@ -62,6 +62,15 @@ public class ContractController {
                 .body(contractService.ContractTest2(userId, realtorId, itemId));
     }
 
+//    @PostMapping("/find-info")
+//    public ResponseEntity<ContractInfoResponse> findItemForPDF(
+//            @RequestBody ContractInfoRequest contractInfoRequest
+//    ){
+//        return ResponseEntity.ok()
+//                .headers(getJsonHeader())
+//                .body(contractService.findContractInfo(contractInfoRequest));
+//    }
+
     @PostMapping("/find-info")
     public ResponseEntity<ContractInfoResponse> findItemForPDF(
             @RequestBody ContractInfoRequest contractInfoRequest

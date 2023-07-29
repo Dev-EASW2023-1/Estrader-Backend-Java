@@ -9,6 +9,7 @@ import com.example.demo.app.domain.model.entity.ContractEntity;
 import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.model.entity.RealtorEntity;
 import com.example.demo.app.domain.model.entity.UserEntity;
+import com.example.demo.app.domain.model.util.PDFUtil;
 import com.example.demo.app.domain.repository.ContractRepository;
 import com.example.demo.app.domain.repository.ItemRepository;
 import com.example.demo.app.domain.repository.RealtorRepository;
@@ -32,6 +33,7 @@ public class ContractService {
     private final ItemRepository itemRepository;
     private final ContractRepository contractRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
+    private final PDFUtil pdfUtil;
 
     @Transactional
     public ContractResponse registerContract(ContractRequest contractRequest) {
@@ -59,7 +61,7 @@ public class ContractService {
 
         if (isContractExists.isPresent()) {
             return ContractResponse.builder()
-                    .isSuccess(true)
+                    .isSuccess(false)
                     .message("이미 계약이 존재합니다.")
                     .name(isRealtorExists.getName())
                     .build();
@@ -133,13 +135,19 @@ public class ContractService {
         return ItemDto.of(test.getItem());
     }
 
-    public ContractInfoResponse findContractInfo(ContractInfoRequest contractInfoRequest){
-        ContractEntity contract = contractRepository.findItemByThreeParams(
-                contractInfoRequest.getUserId(),
-                contractInfoRequest.getRealtorId(),
-                contractInfoRequest.getItemId()
-        ).orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
+//    public ContractInfoResponse findContractInfo(ContractInfoRequest contractInfoRequest){
+//        ContractEntity contract = contractRepository.findItemByThreeParams(
+//                contractInfoRequest.getUserId(),
+//                contractInfoRequest.getRealtorId(),
+//                contractInfoRequest.getItemId()
+//        ).orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
+//
+//        System.out.println(pdfUtil.createPdf("테스트"));
+//
+//        return ContractInfoResponse.of(contract.getItem());
+//    }
 
-        return ContractInfoResponse.of(contract.getItem());
+    public ContractInfoResponse findContractInfo(ContractInfoRequest contractInfoRequest){
+        return ContractInfoResponse.of(pdfUtil.createPdf("테스트"));
     }
 }

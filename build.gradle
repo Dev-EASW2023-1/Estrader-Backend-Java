@@ -33,6 +33,10 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation 'org.apache.pdfbox:pdfbox:2.0.28'
 }
 
 tasks.named('test') {
