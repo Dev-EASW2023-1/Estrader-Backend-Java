@@ -7,11 +7,13 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -29,7 +31,7 @@ public class PDFUtil {
 
     private final Float ONE_CM = 28.346f;
 
-    public URI createPdf(String userId) {
+    public Resource createPdf(String userId) {
         // 파일명에 아이디와 생성일자를 조합하여 생성
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
@@ -162,26 +164,20 @@ public class PDFUtil {
         contentStream.endText();
     }
 
-//    public Resource loadAsResource(String filename) {
-//        try {
-//            Path file = getPath().resolve(filename);
-//            System.out.println(file);
-//            Resource resource = new UrlResource(file.toUri());
-//            if (resource.exists() || resource.isReadable()) {
-//                return resource;
-//            }
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
-    public URI loadAsResource(String filename) {
-        Path file = getPath().resolve(filename);
-        return file.toUri();
+    public Resource loadAsResource(String filename) {
+        try {
+            Path file = getPath().resolve(filename).normalize();
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private Path getPath() {
-        return Paths.get(fileUploadPath);
+        return Paths.get(fileUploadPath).toAbsolutePath().normalize();
     }
 }

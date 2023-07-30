@@ -5,6 +5,7 @@ import com.example.demo.app.domain.model.dto.item.ItemDto;
 import com.example.demo.app.domain.model.dto.item.ItemListDto;
 import com.example.demo.app.domain.service.ContractService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,15 +63,6 @@ public class ContractController {
                 .body(contractService.ContractTest2(userId, realtorId, itemId));
     }
 
-//    @PostMapping("/find-info")
-//    public ResponseEntity<ContractInfoResponse> findItemForPDF(
-//            @RequestBody ContractInfoRequest contractInfoRequest
-//    ){
-//        return ResponseEntity.ok()
-//                .headers(getJsonHeader())
-//                .body(contractService.findContractInfo(contractInfoRequest));
-//    }
-
     @PostMapping("/find-info")
     public ResponseEntity<ContractInfoResponse> findItemForPDF(
             @RequestBody ContractInfoRequest contractInfoRequest
@@ -78,6 +70,16 @@ public class ContractController {
         return ResponseEntity.ok()
                 .headers(getJsonHeader())
                 .body(contractService.findContractInfo(contractInfoRequest));
+    }
+
+    @GetMapping("/create-pdf")
+    public ResponseEntity<Resource> createPdf(){
+        Resource resource = contractService.createPdfResource();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/pdf"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
     private HttpHeaders getJsonHeader() {

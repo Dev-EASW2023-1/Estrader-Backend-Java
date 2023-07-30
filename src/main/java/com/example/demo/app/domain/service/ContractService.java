@@ -16,6 +16,7 @@ import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
@@ -135,19 +136,17 @@ public class ContractService {
         return ItemDto.of(test.getItem());
     }
 
-//    public ContractInfoResponse findContractInfo(ContractInfoRequest contractInfoRequest){
-//        ContractEntity contract = contractRepository.findItemByThreeParams(
-//                contractInfoRequest.getUserId(),
-//                contractInfoRequest.getRealtorId(),
-//                contractInfoRequest.getItemId()
-//        ).orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
-//
-//        System.out.println(pdfUtil.createPdf("테스트"));
-//
-//        return ContractInfoResponse.of(contract.getItem());
-//    }
-
     public ContractInfoResponse findContractInfo(ContractInfoRequest contractInfoRequest){
-        return ContractInfoResponse.of(pdfUtil.createPdf("테스트"));
+        ContractEntity contract = contractRepository.findItemByThreeParams(
+                contractInfoRequest.getUserId(),
+                contractInfoRequest.getRealtorId(),
+                contractInfoRequest.getItemId()
+        ).orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
+
+        return ContractInfoResponse.of(contract.getItem());
+    }
+
+    public Resource createPdfResource(){
+        return pdfUtil.createPdf("test");
     }
 }
