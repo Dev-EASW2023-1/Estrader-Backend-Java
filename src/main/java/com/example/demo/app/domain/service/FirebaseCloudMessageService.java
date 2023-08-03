@@ -7,17 +7,29 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FirebaseCloudMessageService {
     private final ObjectMapper objectMapper;
+
+    private final OkHttpClient okHttpClient;
+
+    @Value("${fcm.project.name}")
+    private String fcmProjectName;
+
+    @Value("${fcm.config.path}")
+    private String firebaseConfigPath;
 
     public void sendMessageTo(
             String targetToken,
@@ -80,9 +92,6 @@ public class FirebaseCloudMessageService {
             String message
     ) throws IOException {
 
-        // OkHttp 클라이언트 객체 생성
-        OkHttpClient client = new OkHttpClient();
-
         // RequestBody 생성
         RequestBody requestBody = RequestBody.create(
                 MediaType.get("application/json; charset=utf-8"),
@@ -91,18 +100,21 @@ public class FirebaseCloudMessageService {
 
         // Post 요청 객체 생성
         Request request = new Request.Builder()
-                .url("https://fcm.googleapis.com/v1/projects/fir-test-59d19/messages:send")
+                .url("https://fcm.googleapis.com/v1/projects/" + fcmProjectName + "/messages:send")
                 .post(requestBody)
                 .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
                 .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                 .build();
 
         // 요청 전송
-        Response response = client.newCall(request)
-                .execute();
-
-        if (response.body() != null) {
-            System.out.println(response.body().string());
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                log.info("fcm 전송 성공 responseCode = {}, errorMessage = {}", response.code(), response.message());
+            } else {
+                log.info("fcm 전송 실패 responseCode = {}, errorMessage = {}", response.code(), response.message());
+            }
+        } catch (IOException e) {
+            log.info("fcm 전송 실패");
         }
     }
 
@@ -145,8 +157,6 @@ public class FirebaseCloudMessageService {
     // Google API 클라이언트 라이브러리를 사용하여 비공개 키 JSON 파일 참조하여 토큰 발급
     // 토큰이 만료되면 토큰 새로고침 메소드가 자동으로 호출되어 업데이트된 토큰 발급
     private String getAccessToken() throws IOException {
-        String firebaseConfigPath = "firebase/fir-test-59d19-firebase-adminsdk-esiqm-c742c40ec1.json";
-
         GoogleCredentials googleCredentials = GoogleCredentials
                 .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
                 .createScoped(
