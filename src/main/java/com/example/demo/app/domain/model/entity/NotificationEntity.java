@@ -10,30 +10,35 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "contract")
-public class ContractEntity {
+@Table(name = "notification")
+public class NotificationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private UserEntity user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private RealtorEntity realtor;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     private ItemEntity item;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private UserEntity user;
+
+    @Column(nullable = false)
+    private String region;
+
+    @Column(nullable = false)
+    private boolean isCompleted;
+
     @Builder
-    public ContractEntity(
+    public NotificationEntity(
+            ItemEntity item,
             UserEntity user,
-            RealtorEntity realtor,
-            ItemEntity item
+            String region,
+            boolean isCompleted
     ) {
-        this.user = user;
-        this.realtor = realtor;
         this.item = item;
+        this.user = user;
+        this.region = region;
+        this.isCompleted = isCompleted;
     }
 }

@@ -1,17 +1,18 @@
 package com.example.demo.app.domain.model.entity;
 
 import com.example.demo.app.domain.model.util.HashUtil;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Log4j2
+@Slf4j
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "realtor")
 public class RealtorEntity {
