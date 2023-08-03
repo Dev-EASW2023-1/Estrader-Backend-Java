@@ -29,7 +29,7 @@ public class PDFUtil {
     @Value("${file.upload-dir}")
     private String fileUploadPath;
 
-    private final Float ONE_CM = 28.346f;
+    private static final Float ONE_CM = 28.346f;
 
     public Resource createPdf(String userId) {
         // 파일명에 아이디와 생성일자를 조합하여 생성
