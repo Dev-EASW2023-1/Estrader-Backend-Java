@@ -21,6 +21,7 @@ public class FcmMessageDto {
         private Notification notification;
         private Data data;
         private String token;
+        private Android android;
     }
 
     @Getter
@@ -37,5 +38,11 @@ public class FcmMessageDto {
         private String targetId;
         private String itemImage;
         private String phase;
+    }
+
+    @Getter
+    @Builder
+    public static class Android {
+        private String priority;
     }
 }

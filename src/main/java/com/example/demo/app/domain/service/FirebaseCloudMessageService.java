@@ -148,6 +148,11 @@ public class FirebaseCloudMessageService {
                                     .phase(phase)
                                     .build()
                         )
+                        .android(
+                                FcmMessageDto.Android.builder()
+                                .priority("high")
+                                .build()
+                        )
                         .build()
                 )
                 .build();
