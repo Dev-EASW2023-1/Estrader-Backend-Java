@@ -111,10 +111,10 @@ public class FirebaseCloudMessageService {
             if (response.isSuccessful()) {
                 log.info("fcm 전송 성공 responseCode = {}, errorMessage = {}", response.code(), response.message());
             } else {
-                log.info("fcm 전송 실패 responseCode = {}, errorMessage = {}", response.code(), response.message());
+                log.warn("fcm 전송 실패 responseCode = {}, errorMessage = {}", response.code(), response.message());
             }
         } catch (IOException e) {
-            log.info("fcm 전송 실패");
+            log.error("fcm 전송 실패");
         }
     }
 

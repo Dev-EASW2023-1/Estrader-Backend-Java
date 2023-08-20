@@ -53,7 +53,7 @@ public class PDFUtil {
         }
         catch (IOException e)
         {
-            log.info("PDF 파일 생성 실패");
+            log.error("PDF 파일 생성 실패");
             return null;
         }
         return loadAsResource(fileName);
@@ -73,7 +73,7 @@ public class PDFUtil {
         }
         catch (IOException e)
         {
-            log.info("PDF 파일 생성 실패");
+            log.error("PDF 파일 생성 실패");
         }
     }
 
@@ -173,6 +173,7 @@ public class PDFUtil {
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            log.error(e.toString());
         }
         return null;
     }

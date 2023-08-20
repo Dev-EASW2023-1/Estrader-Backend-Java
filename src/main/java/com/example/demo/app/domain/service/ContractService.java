@@ -58,7 +58,7 @@ public class ContractService {
 
         send(isRealtorExists.getFcmToken(), contractRequest);
 
-        log.info("전송 성공 from (구매자) {} to (대리인) {}", contractRequest.getUserId(), contractRequest.getRealtorId());
+        log.info("전송 from (구매자) {} to (대리인) {}", contractRequest.getUserId(), contractRequest.getRealtorId());
 
         if (isContractExists.isPresent()) {
             return ContractResponse.builder()
@@ -93,7 +93,7 @@ public class ContractService {
             );
         } catch (IOException e) {
             e.printStackTrace();
-            log.info("전송 실패");
+            log.error("전송 실패");
             throw new ContractFailureException(ErrorCode.CONTRACT_FAILURE);
         }
     }

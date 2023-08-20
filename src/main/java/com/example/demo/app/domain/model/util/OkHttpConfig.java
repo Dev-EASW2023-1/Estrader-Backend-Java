@@ -1,5 +1,6 @@
 package com.example.demo.app.domain.model.util;
 
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 // @Configuration 어노테이션과 @Bean 어노테이션을 함께 사용하여 싱글톤임을 보장
+@Slf4j
 @Configuration
 public class OkHttpConfig {
     private static final int NUMBER_OF_RETRIES = 3;
@@ -38,7 +40,8 @@ public class OkHttpConfig {
                             response = chain.proceed(request);
                             responseOK = response.isSuccessful();
                         } catch (IOException e) {
-                            System.out.println("intercept, Request is not successful - " + tryCount);
+                            e.printStackTrace();
+                            log.error("intercept, Request is not successful - " + tryCount);
                         } finally {
                             tryCount++;
                             if (response != null) {

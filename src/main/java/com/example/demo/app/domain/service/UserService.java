@@ -80,8 +80,6 @@ public class UserService {
 
     @Transactional
     public RegisterDataResponse registerUserInfo(RegisterDataRequest registerDataRequest) {
-        System.out.println(registerDataRequest.getUserId());
-
         Optional<UserEntity> isUserExists =
                 userRepository.findByUserId(registerDataRequest.getUserId());
 
@@ -155,7 +153,7 @@ public class UserService {
 
         send(isRealtorExists.getFcmToken(), fcmRequest);
 
-        log.info("전송 성공 from (구매자) {} to (대리인) {}", fcmRequest.getUserId(), fcmRequest.getTargetId());
+        log.info("전송 from (구매자) {} to (대리인) {}", fcmRequest.getUserId(), fcmRequest.getTargetId());
         log.info("대리인 토큰 = {}", isRealtorExists.getFcmToken());
 
         return FcmResponse.builder()
@@ -172,7 +170,7 @@ public class UserService {
             );
         } catch (IOException e) {
             e.printStackTrace();
-            log.info("전송 실패");
+            log.error("전송 실패");
             throw new FcmFailureException(ErrorCode.FCM_FAILURE);
         }
     }

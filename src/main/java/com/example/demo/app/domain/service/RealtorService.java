@@ -119,7 +119,7 @@ public class RealtorService {
 
         send(isUserExists.getFcmToken(), fcmRequest);
 
-        log.info("전송 성공 from (대리인) {} to (구매자) {}", fcmRequest.getUserId(), fcmRequest.getTargetId());
+        log.info("전송 from (대리인) {} to (구매자) {}", fcmRequest.getUserId(), fcmRequest.getTargetId());
 
         return FcmResponse.builder()
                 .message("전송에 성공하였습니다.")
@@ -135,7 +135,7 @@ public class RealtorService {
             );
         } catch (IOException e) {
             e.printStackTrace();
-            log.info("전송 실패");
+            log.error("전송 실패");
             throw new FcmFailureException(ErrorCode.FCM_FAILURE);
         }
     }
