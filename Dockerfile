@@ -9,7 +9,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew bootJar
 
 # log storage folder
-VOLUME ["/var/log"]
+VOLUME ["/var/logs"]
 
 # unpack jar
 ARG JAR_FILE=./build/libs/*.jar
