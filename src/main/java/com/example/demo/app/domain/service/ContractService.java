@@ -147,6 +147,6 @@ public class ContractService {
     }
 
     public Resource createPdfResource(){
-        return pdfUtil.createPdf("test");
+        return pdfUtil.createPdf();
     }
 }

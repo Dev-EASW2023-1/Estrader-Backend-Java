@@ -7,15 +7,13 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,32 +53,35 @@ public class PDFUtil {
     /**
      * PDF 생성 코드
      *
-     * 임시로 PDF 저장 후 Resource 로 반환하는 방식 적용
+     * 생성한 PDF 파일을 저장하지 않고 바로 Resource 로 반환하는 방식 적용
      * 추후 요구 사항에 따라 S3에 ttl 걸고 저장 혹은 Cloudfront + Signed URLs 으로 url 인증 절차 적용 예정
      *
      */
-    public Resource createPdf(String userId) {
-        String fileName = generateFileName(userId);
+    public Resource createPdf() {
         String docFileName = "bidSheet.pdf";
         String fontFileName = "nanumgothictext.ttf";
 
         File docFile = fileCall(fileClaimDocPath, docFileName,"pdf");
         File fontFile = fileCall(fileFontPath, fontFileName,"ttf");
-        File modifiedPdf = new File(getFilePath() + fileName);
 
-        try (PDDocument doc = PDDocument.load(docFile))
+        byte[] bytes;
+
+        try (PDDocument doc = PDDocument.load(docFile);
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream())
         {
             PDType0Font font = PDType0Font.load(doc, fontFile);
             PDPage page = doc.getPage(0);
             writePdf(doc, font, page);
-            doc.save(modifiedPdf);
+            doc.save(byteArrayOutputStream);
+            bytes = byteArrayOutputStream.toByteArray();
         }
         catch (IOException e)
         {
             log.error("PDF 파일 생성 실패");
             return null;
         }
-        return loadAsResource(getFilePath(), fileName);
+        // 파일을 Resource 타입으로 변환
+        return new ByteArrayResource(bytes);
     }
 
     // 파일명에 아이디와 생성일자를 조합하여 생성

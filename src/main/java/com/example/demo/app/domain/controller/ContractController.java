@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/contract")
@@ -78,8 +80,16 @@ public class ContractController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/pdf"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + generateFileName("test") + "\"")
                 .body(resource);
+    }
+
+    // 파일명에 아이디와 생성일자를 조합하여 생성
+    private String generateFileName(String userId) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String creationDate = currentDateTime.format(formatter);
+        return userId + "_" + creationDate + ".pdf";
     }
 
     private HttpHeaders getJsonHeader() {
