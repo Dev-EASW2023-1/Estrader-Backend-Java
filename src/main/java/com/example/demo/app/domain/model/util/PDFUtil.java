@@ -7,17 +7,36 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+/**
+ * Copyright [2023] [Nam Jae Gyeong]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
 
 @Slf4j
 @Component
@@ -26,23 +45,28 @@ public class PDFUtil {
     private String fileClaimDocPath;
     @Value("${file.font-dir}")
     private String fileFontPath;
-    @Value("${file.upload-dir}")
-    private String fileUploadPath;
+    @Value("${file.upload-dir-windows}")
+    private String windowsFileUploadPath;
+    @Value("${file.upload-dir-docker}")
+    private String dockerFileUploadPath;
 
     private static final Float ONE_CM = 28.346f;
 
+    /**
+     * PDF 생성 코드
+     *
+     * 임시로 PDF 저장 후 Resource 로 반환하는 방식 적용
+     * 추후 요구 사항에 따라 S3에 ttl 걸고 저장 혹은 Cloudfront + Signed URLs 으로 url 인증 절차 적용 예정
+     *
+     */
     public Resource createPdf(String userId) {
-        // 파일명에 아이디와 생성일자를 조합하여 생성
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String creationDate = currentDateTime.format(formatter);
-        String fileName = userId + "_" + creationDate + ".pdf";
+        String fileName = generateFileName(userId);
         String docFileName = "bidSheet.pdf";
         String fontFileName = "nanumgothictext.ttf";
 
-        File docFile = new File(fileClaimDocPath + docFileName);
-        File fontFile = new File(fileFontPath + fontFileName);
-        File modifiedPdf = new File(fileUploadPath + fileName);
+        File docFile = fileCall(fileClaimDocPath, docFileName,"pdf");
+        File fontFile = fileCall(fileFontPath, fontFileName,"ttf");
+        File modifiedPdf = new File(getFilePath() + fileName);
 
         try (PDDocument doc = PDDocument.load(docFile))
         {
@@ -56,7 +80,26 @@ public class PDFUtil {
             log.error("PDF 파일 생성 실패");
             return null;
         }
-        return loadAsResource(fileName);
+        return loadAsResource(getFilePath(), fileName);
+    }
+
+    // 파일명에 아이디와 생성일자를 조합하여 생성
+    public String generateFileName(String userId) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String creationDate = currentDateTime.format(formatter);
+        return userId + "_" + creationDate + ".pdf";
+    }
+
+    // 운영 체제(windows, ubuntu docker) 에 따른 파일 절대 경로 설정
+    public String getFilePath() {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {
+            return windowsFileUploadPath;
+        } else {
+            return dockerFileUploadPath;
+        }
     }
 
     public void writePdf(
@@ -164,9 +207,59 @@ public class PDFUtil {
         contentStream.endText();
     }
 
-    public Resource loadAsResource(String filename) {
+    // jar 파일 배포 시 프로토콜이 다르기 때문에 ClassPathResource 통한 패키지 내부 리소스 파일 가져오기
+    public Resource fileCall(
+            String filePath,
+            String title
+    ) {
+        ClassPathResource resource = new ClassPathResource(filePath + title);
+        if (resource.exists()) {
+            return resource;
+        } else {
+            return null;
+        }
+    }
+
+    // jar 파일 배포 시 프로토콜이 다르기 때문에 InputStream 통해 파일 처리
+    // inputStream 객체에서 File 임시 객체 만들기
+    public File fileCall(
+            String filePath,
+            String title,
+            String fileType
+    ) {
+        try (InputStream inputStream = new ClassPathResource(filePath + title).getInputStream()){
+            File tempFile = File.createTempFile(String.valueOf(inputStream.hashCode()), "." + fileType);
+            tempFile.deleteOnExit();
+            copyInputStreamToFile(inputStream, tempFile);
+            return tempFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error(e.toString());
+        }
+        return null;
+    }
+
+    private void copyInputStreamToFile(InputStream inputStream, File file) {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            int read;
+            byte[] bytes = new byte[1024];
+
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error(e.toString());
+        }
+    }
+
+    // 지정된 파일명의 리소스를 로드하여 Resource 객체로 반환
+    public Resource loadAsResource(
+            String filePath,
+            String filename
+    ) {
         try {
-            Path file = getPath().resolve(filename).normalize();
+            Path file = getPath(filePath).resolve(filename).normalize();
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
@@ -178,7 +271,7 @@ public class PDFUtil {
         return null;
     }
 
-    private Path getPath() {
-        return Paths.get(fileUploadPath).toAbsolutePath().normalize();
+    private Path getPath(String filePath) {
+        return Paths.get(filePath).toAbsolutePath().normalize();
     }
 }
