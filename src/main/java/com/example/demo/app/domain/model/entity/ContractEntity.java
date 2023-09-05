@@ -21,7 +21,7 @@ public class ContractEntity {
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private RealtorEntity realtor;
+    private UserEntity realtor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ItemEntity item;
@@ -29,7 +29,7 @@ public class ContractEntity {
     @Builder
     public ContractEntity(
             UserEntity user,
-            RealtorEntity realtor,
+            UserEntity realtor,
             ItemEntity item
     ) {
         this.user = user;

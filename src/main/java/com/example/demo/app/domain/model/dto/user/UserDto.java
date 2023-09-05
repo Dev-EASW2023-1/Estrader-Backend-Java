@@ -1,6 +1,5 @@
 package com.example.demo.app.domain.model.dto.user;
 
-import com.example.demo.app.domain.model.entity.UserEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,19 +58,5 @@ public class UserDto {
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.fcmToken = fcmToken;
         this.region = region;
-    }
-
-    public UserEntity toEntity() {
-        return UserEntity.builder()
-                .userId(userId)
-                .password(password)
-                .name(name)
-                .residentNumber(residentNumber)
-                .phoneNumber(phoneNumber)
-                .address(address)
-                .corporateRegistrationNumber(corporateRegistrationNumber)
-                .fcmToken(fcmToken)
-                .region(region)
-                .build();
     }
 }

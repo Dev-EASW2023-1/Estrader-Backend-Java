@@ -1,6 +1,9 @@
 package com.example.demo.app.domain.exception;
 
 import com.example.demo.app.domain.exception.exceptions.*;
+import com.example.demo.app.domain.model.dto.Realtor.RealtorRegisterDataResponse;
+import com.example.demo.app.domain.model.dto.Realtor.RealtorSignInResponse;
+import com.example.demo.app.domain.model.dto.Realtor.RealtorSignupCheckResponse;
 import com.example.demo.app.domain.model.dto.contract.ContractResponse;
 import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import com.example.demo.app.domain.model.dto.fcm.FcmResponse;
@@ -43,7 +46,7 @@ public class CustomControllerAdvice {
                 .body(FcmResponse.of(errorCode));
     }
 
-    // 로그인 실패, 비밀번호 불일치
+    // 사용자 로그인 실패, 비밀번호 불일치
     @ExceptionHandler(LoginFailureException.class)
     public ResponseEntity<SignInResponse> LoginFailureHandle(
             LoginFailureException e
@@ -55,7 +58,7 @@ public class CustomControllerAdvice {
                 .body(SignInResponse.of(errorCode));
     }
 
-    // 회원가입 실패
+    // 사용자 회원가입 실패
     @ExceptionHandler(SignupFailureException.class)
     public ResponseEntity<RegisterDataResponse> SignupFailureHandle(
             SignupFailureException e
@@ -67,7 +70,7 @@ public class CustomControllerAdvice {
                 .body(RegisterDataResponse.of(errorCode));
     }
 
-    // 아이디 중복
+    // 사용자 아이디 중복
     @ExceptionHandler(DuplicateIdException.class)
     public ResponseEntity<SignupCheckResponse> DuplicateIdHandle(
             DuplicateIdException e
@@ -77,6 +80,42 @@ public class CustomControllerAdvice {
         return ResponseEntity.ok()
                 .headers(getJson())
                 .body(SignupCheckResponse.of(errorCode));
+    }
+
+    // 대리인 로그인 실패, 비밀번호 불일치
+    @ExceptionHandler(RealtorLoginFailureException.class)
+    public ResponseEntity<RealtorSignInResponse> RealtorLoginFailureHandle(
+            RealtorLoginFailureException e
+    ) {
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ResponseEntity.ok()
+                .headers(getJson())
+                .body(RealtorSignInResponse.of(errorCode));
+    }
+
+    // 대리인 회원가입 실패
+    @ExceptionHandler(RealtorSignupFailureException.class)
+    public ResponseEntity<RealtorRegisterDataResponse> RealtorSignupFailureHandle(
+            RealtorSignupFailureException e
+    ) {
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ResponseEntity.ok()
+                .headers(getJson())
+                .body(RealtorRegisterDataResponse.of(errorCode));
+    }
+
+    // 대리인 아이디 중복
+    @ExceptionHandler(RealtorDuplicateIdException.class)
+    public ResponseEntity<RealtorSignupCheckResponse> RealtorDuplicateIdHandle(
+            RealtorDuplicateIdException e
+    ) {
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ResponseEntity.ok()
+                .headers(getJson())
+                .body(RealtorSignupCheckResponse.of(errorCode));
     }
 
     // 계약 실패

@@ -1,24 +1,26 @@
 package com.example.demo.app.domain.service;
 
+import com.example.demo.app.domain.auth.JwtToken;
 import com.example.demo.app.domain.exception.exceptions.*;
 import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import com.example.demo.app.domain.model.dto.fcm.FcmRequest;
 import com.example.demo.app.domain.model.dto.fcm.FcmResponse;
 import com.example.demo.app.domain.model.dto.user.*;
-import com.example.demo.app.domain.model.entity.RealtorEntity;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
-import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.example.demo.app.domain.Enum.Role.ROLE_MEMBER;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +28,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final RealtorRepository realtorRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
     private final ItemRepository itemRepository;
 
@@ -36,18 +37,18 @@ public class UserService {
             String password,
             String name,
             String residentId,
-            String phoneNum,
+            String phoneNumber,
             String address,
             String corporateRegistrationNumber,
             String fcmToken,
             String region
     ) {
-        UserEntity userinfo = UserEntity.builder()
+        UserEntity userinfo = UserEntity.userLogin()
                 .userId(userid)
                 .password(passwordEncoder.encode(password)) // password should be encoded
                 .residentNumber(residentId)
                 .name(name)
-                .phoneNumber(phoneNum)
+                .phoneNumber(phoneNumber)
                 .address(address)
                 .corporateRegistrationNumber(corporateRegistrationNumber)
                 .fcmToken(fcmToken)
@@ -57,7 +58,7 @@ public class UserService {
     }
 
     public UserListDto findUserInfo() {
-        List<UserEntity> listUserinfo = userRepository.findAll();
+        List<UserEntity> listUserinfo = userRepository.findByRole(ROLE_MEMBER);
 
         List<UserDto> listUserDto = listUserinfo.stream()
                 .map(m -> new UserDto(
@@ -120,14 +121,13 @@ public class UserService {
     }
 
     @Transactional
-    public SignInResponse loginUser(SignInRequest signInRequest) {
+    public SignInResponse loginUser(SignInRequest signInRequest, JwtToken token) {
         UserEntity isUserExists =
                 userRepository.findByUserId(signInRequest.getUserId())
                         .orElseThrow(() -> new LoginFailureException(ErrorCode.LOGIN_FAILURE));
 
-        if (!passwordEncoder.matches(signInRequest.getPassword(),
-                isUserExists.getPassword())) {
-            throw new LoginFailureException(ErrorCode.PASSWORD_MISMATCH);
+        if (isUserExists.getRole() != ROLE_MEMBER) {
+            throw new LoginFailureException(ErrorCode.INSUFFICIENT_PERMISSIONS);
         }
 
         if (signInRequest.getFcmToken() != null) {
@@ -142,19 +142,20 @@ public class UserService {
         return SignInResponse.builder()
                 .isSuccess(true)
                 .message("로그인에 성공했습니다.")
+                .token(token.getAccessToken())
                 .build();
     }
 
     public FcmResponse sendByToken(FcmRequest fcmRequest) {
-        RealtorEntity isRealtorExists = realtorRepository.findByRealtorId(fcmRequest.getTargetId())
+        UserEntity isUserExists = userRepository.findByUserId(fcmRequest.getTargetId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
         itemRepository.findByPhoto(fcmRequest.getItemImage())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
 
-        send(isRealtorExists.getFcmToken(), fcmRequest);
+        send(isUserExists.getFcmToken(), fcmRequest);
 
         log.info("전송 from (구매자) {} to (대리인) {}", fcmRequest.getUserId(), fcmRequest.getTargetId());
-        log.info("대리인 토큰 = {}", isRealtorExists.getFcmToken());
+        log.info("대리인 토큰 = {}", isUserExists.getFcmToken());
 
         return FcmResponse.builder()
                 .message("전송에 성공하였습니다.")

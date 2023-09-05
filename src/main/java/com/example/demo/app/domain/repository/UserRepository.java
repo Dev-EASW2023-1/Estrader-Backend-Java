@@ -1,5 +1,6 @@
 package com.example.demo.app.domain.repository;
 
+import com.example.demo.app.domain.Enum.Role;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,6 @@ public interface UserRepository extends CrudRepository<UserEntity, Long> {
     List<UserEntity> findAll();
 
     Optional<UserEntity> findByUserId(String UserId);
+
+    List<UserEntity> findByRole(Role role);
 }

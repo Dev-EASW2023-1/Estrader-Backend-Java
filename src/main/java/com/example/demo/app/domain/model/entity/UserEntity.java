@@ -1,6 +1,9 @@
 package com.example.demo.app.domain.model.entity;
 
+import com.example.demo.app.domain.Enum.Role;
+import com.example.demo.app.domain.model.dto.Realtor.RealtorRegisterDataRequest;
 import com.example.demo.app.domain.model.dto.user.RegisterDataRequest;
+import com.example.demo.app.domain.model.dto.user.UserDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import static com.example.demo.app.domain.Enum.Role.ROLE_MANAGER;
+import static com.example.demo.app.domain.Enum.Role.ROLE_MEMBER;
 
 @Slf4j
 @Getter
@@ -50,6 +56,9 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime lastUpdatedAt;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     /**
      * 엔티티가 저장될 때마다 lastUpdatedAt 필드에 현재 시간이 자동으로 설정
      */
@@ -68,7 +77,7 @@ public class UserEntity {
         lastUpdatedAt = LocalDateTime.now();
     }
 
-    @Builder
+    @Builder(builderMethodName = "userLogin", builderClassName = "userLogin")
     public UserEntity(
             String userId,
             String password,
@@ -89,9 +98,10 @@ public class UserEntity {
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.fcmToken = fcmToken;
         this.region = region;
+        this.role = ROLE_MEMBER;
     }
 
-    @Builder(builderMethodName = "login", builderClassName = "login")
+    @Builder(builderMethodName = "realtorLogin", builderClassName = "realtorLogin")
     public UserEntity(
             Long id,
             String userId,
@@ -114,6 +124,7 @@ public class UserEntity {
         this.corporateRegistrationNumber = corporateRegistrationNumber;
         this.fcmToken = fcmToken;
         this.region = region;
+        this.role = ROLE_MANAGER;
     }
 
     public UserEntity(UserEntity user, String fcmToken) {
@@ -127,9 +138,10 @@ public class UserEntity {
         this.corporateRegistrationNumber = user.getCorporateRegistrationNumber();
         this.fcmToken = fcmToken;
         this.region = user.getRegion();
+        this.role = user.getRole();
     }
 
-    public UserEntity(RegisterDataRequest dto, String password) {
+    public UserEntity(RegisterDataRequest dto, String password, Role role) {
         this.userId = dto.getUserId();
         this.password = password;
         this.name = dto.getName();
@@ -139,6 +151,33 @@ public class UserEntity {
         this.corporateRegistrationNumber = dto.getCorporateRegistrationNumber();
         this.fcmToken = dto.getFcmToken();
         this.region = dto.getRegion();
+        this.role = role;
+    }
+
+    public UserEntity(RealtorRegisterDataRequest dto, String password, Role role) {
+        this.userId = dto.getRealtorId();
+        this.password = password;
+        this.name = dto.getName();
+        this.residentNumber = dto.getResidentNumber();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.address = dto.getAddress();
+        this.corporateRegistrationNumber = dto.getCorporateRegistrationNumber();
+        this.fcmToken = dto.getFcmToken();
+        this.region = dto.getRegion();
+        this.role = role;
+    }
+
+    public UserEntity(UserEntity user) {
+        this.userId = user.getUserId();
+        this.password = user.getPassword();
+        this.name = user.getName();
+        this.residentNumber = user.getResidentNumber();
+        this.phoneNumber = user.getPhoneNumber();
+        this.address = user.getAddress();
+        this.corporateRegistrationNumber = user.getCorporateRegistrationNumber();
+        this.fcmToken = user.getFcmToken();
+        this.region = user.getRegion();
+        this.role = user.getRole();
     }
 
     public static UserEntity of(UserEntity user, String fcmToken) {
@@ -146,6 +185,28 @@ public class UserEntity {
     }
 
     public static UserEntity of(RegisterDataRequest dto, String password) {
-        return new UserEntity(dto, password);
+        return new UserEntity(dto, password, ROLE_MEMBER);
+    }
+
+    public static UserEntity of(RealtorRegisterDataRequest dto, String password) {
+        return new UserEntity(dto, password, ROLE_MANAGER);
+    }
+
+    public static UserEntity of(UserEntity user) {
+        return new UserEntity(user);
+    }
+
+    public static UserDto toUserDto(UserEntity user) {
+        return UserDto.builder()
+                .userId(user.getUserId())
+                .password(user.getPassword())
+                .name(user.getName())
+                .residentNumber(user.getResidentNumber())
+                .phoneNumber(user.getPhoneNumber())
+                .address(user.getAddress())
+                .corporateRegistrationNumber(user.getCorporateRegistrationNumber())
+                .fcmToken(user.getFcmToken())
+                .region(user.getRegion())
+                .build();
     }
 }

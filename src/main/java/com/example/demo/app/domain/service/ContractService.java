@@ -7,18 +7,17 @@ import com.example.demo.app.domain.model.dto.item.ItemDto;
 import com.example.demo.app.domain.model.dto.item.ItemListDto;
 import com.example.demo.app.domain.model.entity.ContractEntity;
 import com.example.demo.app.domain.model.entity.ItemEntity;
-import com.example.demo.app.domain.model.entity.RealtorEntity;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.model.util.PDFUtil;
 import com.example.demo.app.domain.repository.ContractRepository;
 import com.example.demo.app.domain.repository.ItemRepository;
-import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 public class ContractService {
 
     private final UserRepository userRepository;
-    private final RealtorRepository realtorRepository;
     private final ItemRepository itemRepository;
     private final ContractRepository contractRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
@@ -42,8 +40,8 @@ public class ContractService {
         UserEntity isUserExists =
                 userRepository.findByUserId(contractRequest.getUserId())
                         .orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
-        RealtorEntity isRealtorExists =
-                realtorRepository.findByRealtorId(contractRequest.getRealtorId())
+        UserEntity isRealtorExists =
+                userRepository.findByUserId(contractRequest.getRealtorId())
                         .orElseThrow(() -> new ContractFailureException(ErrorCode.CONTRACT_FAILURE));
         ItemEntity isItemExists =
                 itemRepository.findByPhoto(contractRequest.getItemId())
@@ -127,7 +125,7 @@ public class ContractService {
 
     // Contract 테이블 쿼리 메소드 사용
     public ItemDto ContractTest2(String userId, String realtorId, String caseNumber) {
-        ContractEntity test = contractRepository.findAllByItem_CaseNumberAndRealtor_RealtorIdAndUser_UserId(
+        ContractEntity test = contractRepository.findAllByItem_CaseNumberAndRealtor_UserIdAndUser_UserId(
                 caseNumber,
                 realtorId,
                 userId

@@ -1,13 +1,14 @@
 package com.example.demo.app.domain.model.dto.contract;
 
 import com.example.demo.app.domain.model.entity.ItemEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ContractInfoResponse {
 

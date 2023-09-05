@@ -17,15 +17,20 @@ public class SignInResponse {
     @NotBlank
     private String message;
 
+    @NotBlank
+    private String token;
+
     @Builder
-    public SignInResponse(Boolean isSuccess, String message) {
+    public SignInResponse(Boolean isSuccess, String message, String token) {
         this.isSuccess = isSuccess;
         this.message = message;
+        this.token = token;
     }
 
     public SignInResponse(ErrorCode code) {
         this.isSuccess = code.getIsSuccess();
         this.message = code.getMessage();
+        this.token = "";
     }
 
     public static SignInResponse of(ErrorCode code) {

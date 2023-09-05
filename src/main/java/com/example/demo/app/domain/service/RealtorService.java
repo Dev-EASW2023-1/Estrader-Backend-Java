@@ -1,19 +1,13 @@
 package com.example.demo.app.domain.service;
 
-import com.example.demo.app.domain.exception.exceptions.FcmFailureException;
-import com.example.demo.app.domain.exception.exceptions.LoginFailureException;
-import com.example.demo.app.domain.exception.exceptions.NotFoundException;
-import com.example.demo.app.domain.model.dto.Realtor.RealtorDto;
-import com.example.demo.app.domain.model.dto.Realtor.RealtorListDto;
-import com.example.demo.app.domain.model.dto.Realtor.RealtorSignInRequest;
-import com.example.demo.app.domain.model.dto.Realtor.RealtorSignInResponse;
+import com.example.demo.app.domain.auth.JwtToken;
+import com.example.demo.app.domain.exception.exceptions.*;
+import com.example.demo.app.domain.model.dto.Realtor.*;
 import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import com.example.demo.app.domain.model.dto.fcm.FcmRequest;
 import com.example.demo.app.domain.model.dto.fcm.FcmResponse;
-import com.example.demo.app.domain.model.entity.RealtorEntity;
 import com.example.demo.app.domain.model.entity.UserEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
-import com.example.demo.app.domain.repository.RealtorRepository;
 import com.example.demo.app.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.example.demo.app.domain.Enum.Role.ROLE_MANAGER;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +28,6 @@ import java.util.stream.Collectors;
 public class RealtorService {
 
     private final PasswordEncoder passwordEncoder;
-    private final RealtorRepository realtorRepository;
     private final UserRepository userRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
     private final ItemRepository itemRepository;
@@ -48,8 +44,8 @@ public class RealtorService {
             String fcmToken,
             String region
     ) {
-        RealtorEntity representativeInfo = RealtorEntity.builder()
-                .realtorId(realtorId)
+        UserEntity representativeInfo = UserEntity.realtorLogin()
+                .userId(realtorId)
                 .password(passwordEncoder.encode(password)) // password should be encoded
                 .name(name)
                 .residentNumber(residentNumber)
@@ -59,15 +55,15 @@ public class RealtorService {
                 .fcmToken(fcmToken)
                 .region(region)
                 .build();
-        realtorRepository.save(representativeInfo);
+        userRepository.save(representativeInfo);
     }
 
     public RealtorListDto findRealtorInfo() {
-        List<RealtorEntity> listRealtorInfo = realtorRepository.findAll();
+        List<UserEntity> listRealtorInfo = userRepository.findByRole(ROLE_MANAGER);
 
         List<RealtorDto> listRealtorDto = listRealtorInfo.stream()
                 .map(m -> new RealtorDto(
-                        m.getRealtorId(),
+                        m.getUserId(),
                         m.getPassword(),
                         m.getName(),
                         m.getResidentNumber(),
@@ -85,18 +81,58 @@ public class RealtorService {
     }
 
     @Transactional
-    public RealtorSignInResponse loginRealtor(RealtorSignInRequest realtorSignInRequest) {
-        RealtorEntity isRealtorExists =
-                realtorRepository.findByRealtorId(realtorSignInRequest.getRealtorId())
-                        .orElseThrow(() -> new LoginFailureException(ErrorCode.LOGIN_FAILURE));
+    public RealtorRegisterDataResponse registerRealtorInfo(RealtorRegisterDataRequest realtorRegisterDataRequest) {
+        Optional<UserEntity> isRealtorExists =
+                userRepository.findByUserId(realtorRegisterDataRequest.getRealtorId());
 
-        if (!passwordEncoder.matches(realtorSignInRequest.getPassword(),
-                isRealtorExists.getPassword())) {
-            throw new LoginFailureException(ErrorCode.PASSWORD_MISMATCH);
+        if (isRealtorExists.isPresent()) {
+            log.info("회원가입 실패");
+            throw new RealtorSignupFailureException(ErrorCode.SIGNUP_FAILURE);
+        }
+
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(realtorRegisterDataRequest.getPassword());
+
+        userRepository.save(UserEntity.of(
+                realtorRegisterDataRequest,
+                encodedPassword
+        ));
+
+        log.info("회원가입 성공 = {}", realtorRegisterDataRequest.getRealtorId());
+
+        return RealtorRegisterDataResponse.builder()
+                .isSuccess(true)
+                .message("회원가입에 성공하였습니다.")
+                .build();
+    }
+
+    public RealtorSignupCheckResponse checkDuplicateRealtorInfo(RealtorSignupCheckRequest realtorSignupCheckRequest) {
+        Optional<UserEntity> isRealtorExists =
+                userRepository.findByUserId(realtorSignupCheckRequest.getRealtorId());
+
+        if (isRealtorExists.isPresent()) {
+            throw new RealtorDuplicateIdException(ErrorCode.DUPLICATE_ID);
+        }
+
+        log.info("사용할 수 있는 아이디입니다. = {}", realtorSignupCheckRequest.getRealtorId());
+        return RealtorSignupCheckResponse.builder()
+                .isDuplicated(true)
+                .message("사용할 수 있는 아이디입니다.")
+                .build();
+    }
+
+    @Transactional
+    public RealtorSignInResponse loginRealtor(RealtorSignInRequest realtorSignInRequest, JwtToken token) {
+        UserEntity isRealtorExists =
+                userRepository.findByUserId(realtorSignInRequest.getRealtorId())
+                        .orElseThrow(() -> new RealtorLoginFailureException(ErrorCode.LOGIN_FAILURE));
+
+        if (isRealtorExists.getRole() != ROLE_MANAGER) {
+            throw new RealtorLoginFailureException(ErrorCode.INSUFFICIENT_PERMISSIONS);
         }
 
         if (realtorSignInRequest.getFcmToken() != null) {
-            realtorRepository.save(RealtorEntity.of(
+            userRepository.save(UserEntity.of(
                     isRealtorExists,
                     realtorSignInRequest.getFcmToken()
             ));
@@ -108,6 +144,7 @@ public class RealtorService {
         return RealtorSignInResponse.builder()
                 .isSuccess(true)
                 .message("로그인에 성공했습니다.")
+                .token(token.getAccessToken())
                 .build();
     }
 
@@ -120,6 +157,7 @@ public class RealtorService {
         send(isUserExists.getFcmToken(), fcmRequest);
 
         log.info("전송 from (대리인) {} to (구매자) {}", fcmRequest.getUserId(), fcmRequest.getTargetId());
+        log.info("사용자 토큰 = {}", isUserExists.getFcmToken());
 
         return FcmResponse.builder()
                 .message("전송에 성공하였습니다.")

@@ -1,5 +1,6 @@
 package com.example.demo.app.domain.model.entity;
 
+import com.example.demo.app.domain.Enum.Role;
 import com.example.demo.app.domain.model.util.HashUtil;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -49,6 +50,9 @@ public class RealtorEntity {
 
     @Column(nullable = false)
     private LocalDateTime lastUpdatedAt;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     /**
      * 엔티티가 저장될 때마다 lastUpdatedAt 필드에 현재 시간이 자동으로 설정
@@ -106,6 +110,7 @@ public class RealtorEntity {
         this.corporateRegistrationNumber = realtor.getCorporateRegistrationNumber();
         this.fcmToken = fcmToken;
         this.region = realtor.getRegion();
+        this.role = Role.ROLE_MANAGER;
     }
 
     public static RealtorEntity of(RealtorEntity realtor, String fcmToken) {
