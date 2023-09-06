@@ -31,7 +31,7 @@ public class UserSecurityConfig {
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/user/**").hasAuthority("ROLE_MEMBER")
                 .antMatchers("/realtor/**").hasAuthority("ROLE_MANAGER")
-                .antMatchers("/item/**").hasAuthority("ROLE_MEMBER")
+                .antMatchers("/item/**").hasAnyAuthority("ROLE_MEMBER", "ROLE_MANAGER")
                 .antMatchers("/contract/**").hasAnyAuthority("ROLE_MEMBER", "ROLE_MANAGER")
             .and()
             // Stateless (세션 사용 X)
