@@ -31,6 +31,7 @@ public class RealtorService {
     private final UserRepository userRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
     private final ItemRepository itemRepository;
+    private final AuthenticationService authenticationService;
 
     @Transactional
     public void addRealtorInfo(
@@ -100,9 +101,12 @@ public class RealtorService {
 
         log.info("회원가입 성공 = {}", realtorRegisterDataRequest.getRealtorId());
 
+        JwtToken token = authenticationService.authenticate(realtorRegisterDataRequest.getRealtorId(), realtorRegisterDataRequest.getPassword());
+
         return RealtorRegisterDataResponse.builder()
                 .isSuccess(true)
                 .message("회원가입에 성공하였습니다.")
+                .token(token.getAccessToken())
                 .build();
     }
 

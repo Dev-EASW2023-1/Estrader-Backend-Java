@@ -30,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
     private final ItemRepository itemRepository;
+    private final AuthenticationService authenticationService;
 
     @Transactional
     public void addUserInfo(
@@ -99,9 +100,12 @@ public class UserService {
 
         log.info("회원가입 성공 = {}", registerDataRequest.getUserId());
 
+        JwtToken token = authenticationService.authenticate(registerDataRequest.getUserId(), registerDataRequest.getPassword());
+
         return RegisterDataResponse.builder()
                 .isSuccess(true)
                 .message("회원가입에 성공하였습니다.")
+                .token(token.getAccessToken())
                 .build();
     }
 

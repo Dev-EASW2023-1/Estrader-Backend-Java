@@ -17,15 +17,20 @@ public class RegisterDataResponse {
     @NotBlank
     private String message;
 
+    @NotBlank
+    private String token;
+
     @Builder
-    public RegisterDataResponse(Boolean isSuccess, String message) {
+    public RegisterDataResponse(Boolean isSuccess, String message, String token) {
         this.isSuccess = isSuccess;
         this.message = message;
+        this.token = token;
     }
 
     public RegisterDataResponse(ErrorCode code) {
         this.isSuccess = code.getIsSuccess();
         this.message = code.getMessage();
+        this.token = "";
     }
 
     public static RegisterDataResponse of(ErrorCode code) {

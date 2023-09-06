@@ -17,15 +17,20 @@ public class RealtorRegisterDataResponse {
     @NotBlank
     private String message;
 
+    @NotBlank
+    private String token;
+
     @Builder
-    public RealtorRegisterDataResponse(Boolean isSuccess, String message) {
+    public RealtorRegisterDataResponse(Boolean isSuccess, String message, String token) {
         this.isSuccess = isSuccess;
         this.message = message;
+        this.token = token;
     }
 
     public RealtorRegisterDataResponse(ErrorCode code) {
         this.isSuccess = code.getIsSuccess();
         this.message = code.getMessage();
+        this.token = "";
     }
 
     public static RealtorRegisterDataResponse of(ErrorCode code) {
