@@ -61,6 +61,11 @@ public class UserController {
         return "user/list";
     }
 
+    @GetMapping("/navermap")
+    public String showNaverMap(Model model) {
+        return "user/navermap";
+    }
+
     @GetMapping("/show-list")
     public ResponseEntity<UserListDto> showMember() {
         return ResponseEntity.ok()
