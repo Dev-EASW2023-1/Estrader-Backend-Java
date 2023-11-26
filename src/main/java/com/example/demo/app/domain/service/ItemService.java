@@ -5,9 +5,13 @@ import com.example.demo.app.domain.model.dto.error.ErrorCode;
 import com.example.demo.app.domain.model.dto.item.ItemDto;
 import com.example.demo.app.domain.model.dto.item.ItemListDto;
 import com.example.demo.app.domain.model.dto.item.LookUpItemRequest;
+import com.example.demo.app.domain.model.dto.item.MapDto;
 import com.example.demo.app.domain.model.entity.ItemEntity;
 import com.example.demo.app.domain.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +29,9 @@ public class ItemService {
             String biddingPeriod,
             String itemType,
             String note,
-            String managementNumber
-
+            String managementNumber,
+            String xcoordinate,
+            String ycoordinate
     ) {
         ItemEntity item = ItemEntity.builder()
                 .caseNumber(caseNumber)
@@ -38,21 +43,28 @@ public class ItemService {
                 .itemType(itemType)
                 .note(note)
                 .managementNumber(managementNumber)
+                .xcoordinate(xcoordinate)
+                .ycoordinate(ycoordinate)
                 .build();
         itemRepository.save(item);
     }
 
-    public ItemListDto findItemList() {
-        List<ItemEntity> listUser = itemRepository.findAll();
+public ItemListDto findItemList(MapDto mapDto, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<ItemEntity> pagedResult
+            = itemRepository.findByLocationContaining(
+                    mapDto.getDistrict(), pageable);
 
-        List<ItemDto> listItemDto = listUser.stream()
-                .map(ItemDto::of)
-                .collect(Collectors.toList());
+    List<ItemDto> listItemDto = pagedResult.getContent()
+            .stream()
+            .map(ItemDto::of)
+            .collect(Collectors.toList());
 
-        return ItemListDto.builder()
-                .itemDto(listItemDto)
-                .build();
-    }
+    return ItemListDto.builder()
+            .itemDto(listItemDto)
+            .build();
+}
+
 
     public ItemDto lookUpItem(LookUpItemRequest lookUpItemRequest) {
         ItemEntity isItemExists =

@@ -46,6 +46,7 @@ public class AuthenticationService {
                 userRepository.findByUserId(user.getUsername())
                         .orElseThrow(() -> new LoginFailureException(ErrorCode.NOT_FOUND));
 
+
         return UserEntity.toUserDto(userEntity);
     }
 }

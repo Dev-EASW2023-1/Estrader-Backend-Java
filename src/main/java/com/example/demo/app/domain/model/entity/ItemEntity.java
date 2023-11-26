@@ -43,8 +43,16 @@ public class ItemEntity {
     @Column(nullable = false)
     private String managementNumber;
 
+    @Column(nullable = false)
+    private String xcoordinate;
+
+    @Column(nullable = false)
+    private String ycoordinate;
+
+
+
     @Builder
-    public ItemEntity(String caseNumber, String court, String location, String minimumBidPrice, String photo, String biddingPeriod, String itemType, String note, String managementNumber) {
+    public ItemEntity(String caseNumber, String court, String location, String minimumBidPrice, String photo, String biddingPeriod, String itemType, String note, String managementNumber, String xcoordinate, String ycoordinate, String district) {
         this.caseNumber = caseNumber;
         this.court = court;
         this.location = location;
@@ -54,5 +62,7 @@ public class ItemEntity {
         this.itemType = itemType;
         this.note = note;
         this.managementNumber = managementNumber;
+        this.xcoordinate = xcoordinate;
+        this.ycoordinate = ycoordinate;
     }
 }

@@ -61,10 +61,7 @@ public class UserController {
         return "user/list";
     }
 
-    @GetMapping("/navermap")
-    public String showNaverMap(Model model) {
-        return "user/navermap";
-    }
+
 
     @GetMapping("/show-list")
     public ResponseEntity<UserListDto> showMember() {
@@ -80,6 +77,15 @@ public class UserController {
         return ResponseEntity.ok()
                 .headers(getJsonHeader())
                 .body(UserService.registerUserInfo(registerDataRequest));
+    }
+
+    @GetMapping("/naver-map")
+    public String showNaverMap(
+            Model model,
+            @AuthenticationPrincipal User user
+    ) {
+        System.out.println("네이버 지도 확인하는 유저  \n" + user);
+        return "item/navermap";
     }
 
     @PostMapping("/account-exists")
