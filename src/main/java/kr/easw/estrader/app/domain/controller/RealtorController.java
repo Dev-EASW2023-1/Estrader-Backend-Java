@@ -2,7 +2,6 @@ package kr.easw.estrader.app.domain.controller;
 
 import kr.easw.estrader.app.domain.auth.JwtAuthenticateFilter;
 import kr.easw.estrader.app.domain.auth.JwtToken;
-import com.example.demo.app.domain.model.dto.Realtor.*;
 import kr.easw.estrader.app.domain.model.dto.Realtor.*;
 import kr.easw.estrader.app.domain.model.dto.fcm.FcmRequest;
 import kr.easw.estrader.app.domain.model.dto.fcm.FcmResponse;

@@ -4,7 +4,6 @@ import kr.easw.estrader.app.domain.auth.JwtAuthenticateFilter;
 import kr.easw.estrader.app.domain.auth.JwtToken;
 import kr.easw.estrader.app.domain.model.dto.fcm.FcmRequest;
 import kr.easw.estrader.app.domain.model.dto.fcm.FcmResponse;
-import com.example.demo.app.domain.model.dto.user.*;
 import kr.easw.estrader.app.domain.model.dto.user.*;
 import kr.easw.estrader.app.domain.model.entity.UserEntity;
 import kr.easw.estrader.app.domain.repository.UserRepository;

@@ -1,6 +1,6 @@
 package kr.easw.estrader.app.domain.exception;
 
-import com.example.demo.app.domain.exception.exceptions.*;
+import kr.easw.estrader.app.domain.exception.exceptions.*;
 import kr.easw.estrader.app.domain.model.dto.Realtor.RealtorRegisterDataResponse;
 import kr.easw.estrader.app.domain.model.dto.Realtor.RealtorSignInResponse;
 import kr.easw.estrader.app.domain.model.dto.Realtor.RealtorSignupCheckResponse;
@@ -10,12 +10,12 @@ import kr.easw.estrader.app.domain.model.dto.fcm.FcmResponse;
 import kr.easw.estrader.app.domain.model.dto.user.RegisterDataResponse;
 import kr.easw.estrader.app.domain.model.dto.user.SignInResponse;
 import kr.easw.estrader.app.domain.model.dto.user.SignupCheckResponse;
-import kr.easw.estrader.app.domain.exception.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import java.nio.charset.StandardCharsets;
 
 // @ControllerAdvice 는 모든 @Controller 즉, 전역에서 발생할 수 있는 예외를 잡아 처리해주는 annotation

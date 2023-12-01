@@ -1,8 +1,7 @@
 package kr.easw.estrader.app.domain.service;
 
 import kr.easw.estrader.app.domain.auth.JwtToken;
-import com.example.demo.app.domain.exception.exceptions.*;
-import com.example.demo.app.domain.model.dto.Realtor.*;
+import kr.easw.estrader.app.domain.exception.exceptions.*;
 import kr.easw.estrader.app.domain.model.dto.Realtor.*;
 import kr.easw.estrader.app.domain.model.dto.error.ErrorCode;
 import kr.easw.estrader.app.domain.model.dto.fcm.FcmRequest;
@@ -10,7 +9,6 @@ import kr.easw.estrader.app.domain.model.dto.fcm.FcmResponse;
 import kr.easw.estrader.app.domain.model.entity.UserEntity;
 import kr.easw.estrader.app.domain.repository.ItemRepository;
 import kr.easw.estrader.app.domain.repository.UserRepository;
-import kr.easw.estrader.app.domain.exception.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
