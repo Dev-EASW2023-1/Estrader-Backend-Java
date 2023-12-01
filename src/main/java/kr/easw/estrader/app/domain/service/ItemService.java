@@ -31,7 +31,8 @@ public class ItemService {
             String note,
             String managementNumber,
             String xcoordinate,
-            String ycoordinate
+            String ycoordinate,
+            String district
     ) {
         ItemEntity item = ItemEntity.builder()
                 .caseNumber(caseNumber)
@@ -45,6 +46,7 @@ public class ItemService {
                 .managementNumber(managementNumber)
                 .xcoordinate(xcoordinate)
                 .ycoordinate(ycoordinate)
+                .district(district)
                 .build();
         itemRepository.save(item);
     }

@@ -14,8 +14,8 @@ public enum ErrorCode {
     SIGNUP_FAILURE("C005", "회원가입에 실패하였습니다.", false),
     NOT_FOUND("C006", "doesn't exist.", false),
     FCM_FAILURE("C007", "전송에 실패했습니다.", false),
-    INSUFFICIENT_PERMISSIONS("C008", "권한이 부족합니다.", false),
-    NOT_FOUND2("C006", "몰라잇", false);
+    INSUFFICIENT_PERMISSIONS("C008", "권한이 부족합니다.", false);
+
     private final String code;
     private final String message;
     private final Boolean isSuccess;

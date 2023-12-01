@@ -152,7 +152,7 @@ public class UserService {
 
     public FcmResponse sendByToken(FcmRequest fcmRequest) {
         UserEntity isUserExists = userRepository.findByUserId(fcmRequest.getTargetId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND2));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
         itemRepository.findByPhoto(fcmRequest.getItemImage())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
 

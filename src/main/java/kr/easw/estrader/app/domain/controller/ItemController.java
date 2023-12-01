@@ -46,7 +46,8 @@ public class ItemController {
             @RequestParam String note,
             @RequestParam String managementNumber,
             @RequestParam String xcoordinate,
-            @RequestParam String ycoordinate
+            @RequestParam String ycoordinate,
+            @RequestParam String district
 
     ) {
         itemService.addItem(
@@ -60,7 +61,8 @@ public class ItemController {
                 note,
                 managementNumber,
                 xcoordinate,
-                ycoordinate
+                ycoordinate,
+                district
         );
         return "redirect:/item/list";
     }
