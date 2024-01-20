@@ -13,7 +13,8 @@ import java.util.Optional;
 public interface ItemRepository extends CrudRepository<ItemEntity, Long> {
     @Override
     List<ItemEntity> findAll();
-    Page<ItemEntity> findByLocationContaining(String district, Pageable pageable);
+
+    Page<ItemEntity> findAll(Pageable pageable);
 
     Optional<ItemEntity> findByCaseNumber(String caseNumber);
 

@@ -4,14 +4,15 @@ import kr.easw.estrader.app.domain.exception.exceptions.NotFoundException;
 import kr.easw.estrader.app.domain.model.dto.error.ErrorCode;
 import kr.easw.estrader.app.domain.model.dto.item.ItemDto;
 import kr.easw.estrader.app.domain.model.dto.item.ItemListDto;
+import kr.easw.estrader.app.domain.model.dto.item.ItemPageRequestDTO;
 import kr.easw.estrader.app.domain.model.dto.item.LookUpItemRequest;
-import kr.easw.estrader.app.domain.model.dto.item.MapDto;
 import kr.easw.estrader.app.domain.model.entity.ItemEntity;
 import kr.easw.estrader.app.domain.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,22 +52,36 @@ public class ItemService {
         itemRepository.save(item);
     }
 
-public ItemListDto findItemList(MapDto mapDto, int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
-    Page<ItemEntity> pagedResult
-            = itemRepository.findByLocationContaining(
-                    mapDto.getDistrict(), pageable);
+    public ItemListDto findItemList(ItemPageRequestDTO itemPageRequestDTO) {
+        Pageable pageable = PageRequest.of(
+                itemPageRequestDTO.getPage(),
+                itemPageRequestDTO.getSize(),
+                Sort.by("id").descending()
+        );
 
-    List<ItemDto> listItemDto = pagedResult.getContent()
-            .stream()
-            .map(ItemDto::of)
-            .collect(Collectors.toList());
+        System.out.println("페이지 출력 " + pageable);
 
-    return ItemListDto.builder()
-            .itemDto(listItemDto)
-            .build();
-}
+        Page<ItemEntity> pagedResult
+                = itemRepository.findAll(pageable);
 
+        List<ItemDto> listItemDto = pagedResult.getContent().stream()
+                .map(ItemDto::of)
+                .collect(Collectors.toList());
+
+        return ItemListDto.builder()
+                .itemDto(listItemDto)
+                .build();
+    }
+
+    public ItemListDto findItemList() {
+        List<ItemDto> listItemDto = itemRepository.findAll().stream()
+                .map(ItemDto::of)
+                .collect(Collectors.toList());
+
+        return ItemListDto.builder()
+                .itemDto(listItemDto)
+                .build();
+    }
 
     public ItemDto lookUpItem(LookUpItemRequest lookUpItemRequest) {
         ItemEntity isItemExists =

@@ -2,8 +2,8 @@ package kr.easw.estrader.app.domain.controller;
 
 import kr.easw.estrader.app.domain.model.dto.item.ItemDto;
 import kr.easw.estrader.app.domain.model.dto.item.ItemListDto;
+import kr.easw.estrader.app.domain.model.dto.item.ItemPageRequestDTO;
 import kr.easw.estrader.app.domain.model.dto.item.LookUpItemRequest;
-import kr.easw.estrader.app.domain.model.dto.item.MapDto;
 import kr.easw.estrader.app.domain.model.entity.ItemEntity;
 import kr.easw.estrader.app.domain.repository.ItemRepository;
 import kr.easw.estrader.app.domain.service.ItemService;
@@ -84,23 +84,15 @@ public class ItemController {
             @AuthenticationPrincipal User user
     ) {
         System.out.println("네이버 지도 확인하는 유저  \n" + user);
-        return "item/navermap";
+        return "item/naverMap";
     }
 
-    @GetMapping("/show-list")
-    public ResponseEntity<ItemListDto> showItemList(
-            @RequestParam String district,
-            @RequestParam int page,
-            @RequestParam int size) {
-
-        MapDto mapDto = MapDto.withDistrict(district);
+    @PostMapping("/show-list")
+    public ResponseEntity<ItemListDto> showItemList(@RequestBody ItemPageRequestDTO itemPageRequestDTO) {
         return ResponseEntity.ok()
                 .headers(getJsonHeader())
-                .body(itemService.findItemList(mapDto, page, size));
+                .body(itemService.findItemList(itemPageRequestDTO));
     }
-
-
-
 
     @PostMapping("/show")
     public ResponseEntity<ItemDto> showItem(@RequestBody LookUpItemRequest lookUpItemRequest) {

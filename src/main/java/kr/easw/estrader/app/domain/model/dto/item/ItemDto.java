@@ -45,11 +45,11 @@ public class ItemDto {
     @NotBlank
     private String ycoordinate;
 
-
-
+    @NotBlank
+    private String district;
 
     @Builder
-    public ItemDto(String caseNumber, String court, String location, String minimumBidPrice, String photo, String biddingPeriod, String itemType, String note, String managementNumber, String xcoordinate, String ycoordinate, String district ) {
+    public ItemDto(String caseNumber, String court, String location, String minimumBidPrice, String photo, String biddingPeriod, String itemType, String note, String managementNumber, String xcoordinate, String ycoordinate, String district) {
         this.caseNumber = caseNumber;
         this.court = court;
         this.location = location;
@@ -61,8 +61,7 @@ public class ItemDto {
         this.managementNumber = managementNumber;
         this.xcoordinate = xcoordinate;
         this.ycoordinate = ycoordinate;
-
-
+        this.district = district;
     }
 
     public ItemDto(ItemEntity item) {
@@ -77,8 +76,7 @@ public class ItemDto {
         this.managementNumber = item.getManagementNumber();
         this.xcoordinate = item.getXcoordinate();
         this.ycoordinate = item.getYcoordinate();
-
-
+        this.district = item.getDistrict();
     }
 
     public static ItemDto of(ItemEntity item) {
@@ -98,8 +96,7 @@ public class ItemDto {
                 .managementNumber(managementNumber)
                 .xcoordinate(xcoordinate)
                 .ycoordinate(ycoordinate)
+                .district(district)
                 .build();
     }
 }
-
-
